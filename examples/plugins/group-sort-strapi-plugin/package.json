@@ -36,6 +36,7 @@
     "react-intl": "^7.0.4"
   },
   "devDependencies": {
+    "@strapi/content-type-builder": "workspace:*",
     "@strapi/sdk-plugin": "^5.2.8",
     "@strapi/strapi": "workspace:*",
     "@strapi/typescript-utils": "workspace:*",

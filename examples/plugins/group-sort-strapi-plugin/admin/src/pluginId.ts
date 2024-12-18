@@ -1,1 +1,3 @@
-export const PLUGIN_ID = 'group-sort-strapi-plugin';
+import pluginPkg from '../../package.json';
+
+export const PLUGIN_ID = pluginPkg.name;
