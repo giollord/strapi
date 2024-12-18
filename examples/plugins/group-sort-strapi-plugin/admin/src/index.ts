@@ -1,7 +1,6 @@
-import { getTranslation } from './utils/getTranslation';
 import { PLUGIN_ID } from './pluginId';
 import { Initializer } from './components/Initializer';
-import { PluginIcon } from './components/PluginIcon';
+import { PluginIcon, GroupIcon, OrderIcon } from './components/PluginIcon';
 
 export default {
   register(app: any) {
@@ -17,6 +16,44 @@ export default {
 
         return App;
       },
+    });
+
+    app.customFields.register({
+      name: 'order',
+      type: 'integer',
+      pluginId: PLUGIN_ID,
+      intlLabel: {
+        id: `${PLUGIN_ID}.order.label`,
+        defaultMessage: 'Order',
+      },
+      intlDescription: {
+        id: `${PLUGIN_ID}.order.description`,
+        defaultMessage: 'Order within the group',
+      },
+      icon: OrderIcon,
+      components: {
+        Input: () => import('./components/OrderInput')
+      },
+      options: {}
+    });
+
+    app.customFields.register({
+      name: 'group',
+      type: 'string',
+      pluginId: PLUGIN_ID,
+      intlLabel: {
+        id: `${PLUGIN_ID}.group.label`,
+        defaultMessage: 'Group',
+      },
+      intlDescription: {
+        id: `${PLUGIN_ID}.group.description`,
+        defaultMessage: "Group name, use '/' to create subgroups",
+      },
+      icon: GroupIcon,
+      components: {
+        Input: () => import('./components/GroupInput')
+      },
+      options: {}
     });
 
     app.registerPlugin({

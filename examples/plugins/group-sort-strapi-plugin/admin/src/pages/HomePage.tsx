@@ -1,16 +1,22 @@
-import { Main } from '@strapi/design-system';
+import { DesignSystemProvider, Main, TypographyComponent } from '@strapi/design-system';
+import { Typography } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
+import useTranslation from '../utils/useTranslation';
 
-import { getTranslation } from '../utils/getTranslation';
+import styled from 'styled-components';
 
 const HomePage = () => {
-  const { formatMessage } = useIntl();
-
+  const { formatMessage } = useTranslation();
+  
   return (
-    <Main>
-      <h1>Welcome to {formatMessage({ id: getTranslation('plugin.name') })}</h1>
-    </Main>
+    <MainHeader tag='h1' variant='alpha'>
+      Welcome to {formatMessage({ id: 'plugin.name' })}
+    </MainHeader>
   );
 };
+
+const MainHeader = styled<TypographyComponent>(Typography)`
+
+`;
 
 export { HomePage };
