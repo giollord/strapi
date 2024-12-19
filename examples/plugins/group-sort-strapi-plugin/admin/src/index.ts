@@ -32,7 +32,10 @@ export default {
       },
       icon: OrderIcon,
       components: {
-        Input: () => import('./components/OrderInput')
+        Input: async () =>
+          import('./components/OrderInput').then((module) => ({
+            default: module.OrderInput,
+          }))
       },
       options: {}
     });
@@ -51,7 +54,10 @@ export default {
       },
       icon: GroupIcon,
       components: {
-        Input: () => import('./components/GroupInput')
+        Input: async () =>
+          import('./components/GroupInput').then((module) => ({
+            default: module.GroupInput,
+          }))
       },
       options: {}
     });

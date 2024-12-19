@@ -1,27 +1,33 @@
-import { NumberInput } from '@strapi/design-system';
+import { Field, Flex, NumberInput } from '@strapi/design-system';
 import { forwardRef } from 'react';
-import { useIntl } from 'react-intl';
+import useTranslation from '../utils/useTranslation';
 
 const OrderInput = forwardRef<HTMLInputElement, any>((props, ref) => {
-  const { attribute, disabled, intlLabel, name, onChange, required, value } = props;
-  const { formatMessage } = useIntl();
+  const { attribute, hint, disabled = false, labelAction, label, name, required = false, onChange, value, error, placeholder } = props;
+  const { formatMessage } = useTranslation();
 
-  const handleChange = (value: number | undefined) => {
+  const handleChange = (i: number | undefined) => {
     onChange({
-      target: { name, type: attribute.type, value: value },
+      target: { name, type: attribute.type, value: i },
     });
   };
 
   return (
-    <NumberInput 
-      ref={ref}
-      name={name}
-      disabled={disabled}
-      value={value}
-      required={required}
-      placeholder={formatMessage(intlLabel)}
-      onValueChange={handleChange}
-    />
+    <Field.Root name={name} id={name} error={error} hint={hint} required={required}>
+      <Flex direction="column" alignItems="stretch" gap={1}>
+        <Field.Label action={labelAction}>{label}</Field.Label>
+        <NumberInput
+          ref={ref}
+          name={name}
+          disabled={disabled}
+          value={value}
+          required={required}
+          placeholder={placeholder || formatMessage({ id: 'order.input.placeholder' })?.toString()}
+          onValueChange={handleChange} />
+        <Field.Hint />
+        <Field.Error />
+      </Flex>
+    </Field.Root>
   );
 });
 
