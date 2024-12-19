@@ -7,10 +7,9 @@ import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { ReactNode } from 'react';
 import { Options as IntlMessageFormatOptions } from 'intl-messageformat';
 
-const getTranslation = (id: string | undefined) => `${PLUGIN_ID}.${id}`;
-const useTranslation = () => {
+export const getTranslation = (id: string | undefined) => `${PLUGIN_ID}.${id}`;
+export const useTranslation = () => {
   const intl = useIntl();
-
   return {
     ...intl,
     formatMessage: (
@@ -27,5 +26,3 @@ const useTranslation = () => {
     },
   };
 }
-
-export default useTranslation;
