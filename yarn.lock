@@ -19563,6 +19563,7 @@ __metadata:
     react-router-dom: "npm:^6.28.0"
     styled-components: "npm:^6.1.13"
     typescript: "npm:^5.7.2"
+    yup: "npm:0.32.9"
   peerDependencies:
     "@strapi/sdk-plugin": ^5.2.8
     "@strapi/strapi": "workspace:*"

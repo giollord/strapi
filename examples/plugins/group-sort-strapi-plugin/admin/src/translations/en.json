@@ -1,9 +1,8 @@
 {
-    "group-sort-strapi-plugin.plugin.name": "Group and Sort",
+    "group-sort-strapi-plugin.plugin.name": "Sorting",
     "group-sort-strapi-plugin.order.label": "Order",
     "group-sort-strapi-plugin.order.description": "Order within the group",
     "group-sort-strapi-plugin.order.input.placeholder": "Order within the group",
-    "group-sort-strapi-plugin.group.label": "Group",
-    "group-sort-strapi-plugin.group.description": "Group name, use '/' to create subgroups",
-    "group-sort-strapi-plugin.group.input.placeholder": "Group name, use '/' to create subgroups"
+    "group-sort-strapi-plugin.content-field-editor.group.label": "Grouping field",
+    "group-sort-strapi-plugin.content-field-editor.group.description": "Field which will be used to group entries in \"Sort\" view"
 }

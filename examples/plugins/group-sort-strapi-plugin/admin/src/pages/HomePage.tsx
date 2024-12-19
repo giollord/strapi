@@ -1,7 +1,7 @@
 import { DesignSystemProvider, Main, TypographyComponent } from '@strapi/design-system';
 import { Typography } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
-import useTranslation from '../utils/useTranslation';
+import { useTranslation } from '../utils/useTranslation';
 
 import styled from 'styled-components';
 
