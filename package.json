@@ -28,7 +28,8 @@
     "examples/plugins/*",
     "examples/*/src/plugins/*",
     ".github/actions/*",
-    "scripts/*"
+    "scripts/*",
+    "plugins/*"
   ],
   "scripts": {
     "build": "nx run-many --target=build --nx-ignore-cycles",
@@ -77,7 +78,7 @@
     "test:unit:update": "jest --config jest.config.js -u",
     "test:unit:all": "nx run-many --target=test:unit --nx-ignore-cycles",
     "test:unit:watch": "run test:unit --watch",
-    "plugin:develop": "concurrently --handle-input --kill-others \"npm run --prefix examples/plugins/group-sort-strapi-plugin watch\" \"node -e \"\"setTimeout(() => process.exit(0), 5000)\"\" && npm run --prefix examples/getstarted develop\""
+    "plugin:develop": "concurrently --handle-input --kill-others \"npm run --prefix plugins/group-sort-strapi-plugin watch\" \"node -e \"\"setTimeout(() => process.exit(0), 5000)\"\" && npm run --prefix examples/getstarted develop\""
   },
   "resolutions": {
     "@types/koa": "2.13.4"
