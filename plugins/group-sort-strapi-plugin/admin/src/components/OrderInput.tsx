@@ -31,4 +31,4 @@ const OrderInput = forwardRef<HTMLInputElement, any>((props, ref) => {
   );
 });
 
-export { OrderInput };
+export default OrderInput;

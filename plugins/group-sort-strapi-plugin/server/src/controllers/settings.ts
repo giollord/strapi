@@ -1,9 +1,8 @@
-import type { Core } from '@strapi/strapi';
-import { Context, ExtendableContext } from 'koa';
+import { Context } from 'koa';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
-import { x } from 'tar';
+import { PLUGIN_ID } from '../../../shared/pluginId';
 
-const service = () => strapi.plugin('group-sort-strapi-plugin').service('service');
+const service = () => strapi.plugin(PLUGIN_ID).service('service');
 
 const execute = async (ctx, promise): Promise<any> => {
   try {
@@ -17,19 +16,13 @@ const execute = async (ctx, promise): Promise<any> => {
   }
 }
 
-const controller = {
-  index(ctx: Context) {
-    execute(ctx, service().getWelcomeMessage(ctx));
-  },
-  async getAllGroups(ctx: Context) {
-    execute(ctx, service().getAllGroups(ctx));
+const groups = {
+  async getItemsWithGroups(ctx: Context) {
+    execute(ctx, service().getItemsWithGroups(ctx));
   },
   async getGroup(ctx: Context) {
     execute(ctx, service().getGroup(ctx));
-  },
-  async getGroupNames(ctx: Context) {
-    execute(ctx, service().getGroupNames(ctx));
   }
 };
 
-export default controller;
+export default groups;

@@ -1,5 +1,9 @@
 {
     "group-sort-strapi-plugin.plugin.name": "Sorting",
+    "group-sort-strapi-plugin.plugin.settings.name": "Sorting",
+    "group-sort-strapi-plugin.plugin.settings.description": "Configure the plugin",
+    "group-sort-strapi-plugin.plugin.settings.page.title": "Settings - Sorting",
+    "group-sort-strapi-plugin.plugin.settings.save.success": "Save successful",
     "group-sort-strapi-plugin.order.label": "Order",
     "group-sort-strapi-plugin.order.description": "Order within the group",
     "group-sort-strapi-plugin.order-2d.label": "Order 2D",
@@ -7,6 +11,10 @@
     "group-sort-strapi-plugin.order.input.placeholder": "Order within the group",
     "group-sort-strapi-plugin.content-field-editor.group.label": "Grouping field",
     "group-sort-strapi-plugin.content-field-editor.group.description": "Field which will be used to group entries in \"Sort\" view",
+    "group-sort-strapi-plugin.content-field-editor.layout-columns.label": "Columns",
+    "group-sort-strapi-plugin.content-field-editor.layout-columns.description": "Number of columns in \"Sort\" view",
+    "content-field-editor.row-height.label": "Row height, rem",
+    "content-field-editor.row-height.description": "Row height in rem in \"Sort\" view",
     "group-sort-strapi-plugin.header.name": "Sorting",
     "group-sort-strapi-plugin.left-menu.search.label": "Search for a content type",
     "group-sort-strapi-plugin.left-menu.back.label": "Back"
