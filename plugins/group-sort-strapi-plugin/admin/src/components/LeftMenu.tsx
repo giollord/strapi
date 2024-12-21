@@ -19,6 +19,7 @@ import { Struct } from '@strapi/types';
 import { ArrowLeft } from '@strapi/icons';
 import { getTranslation } from '../utils/useTranslation';
 import { useAsyncMemo } from '../utils/useAsyncMemo';
+import { PLUGIN_ID } from '../../../shared/pluginId';
 
 interface ContentManagerLink {
   permissions: Permission[];
@@ -64,12 +65,12 @@ const LeftMenu = () => {
     return acc;
   }, {} as Record<string, Struct.ContentTypeSchema>);
   
-  const {uid} = useParams<{uid: string}>();
+  const {uid, groupname} = useParams<{uid: string, groupname: string}>();
   const isCollectionTypeOpen = Boolean(uid);
   const collectionTypesLoaded = collectionTypes.length > 0;
 
   const tmp = useAsyncMemo(async () => {
-    const response = await fetchClient.get(`/group-sort-strapi-plugin/groups/${uid}`);
+    const response = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}`);
     console.log(response.data);
     return response.data;
   }, [uid]);
@@ -80,7 +81,7 @@ const LeftMenu = () => {
         search: null,
         kind: collectionType.kind,
         title: collectionType.info.displayName,
-        to: `/plugins/group-sort-strapi-plugin/${collectionType.uid}`,
+        to: `/plugins/${PLUGIN_ID}/${collectionType.uid}`,
         uid: collectionType.uid,
         name: (collectionType.info as any).name,
         isDisplayed: (collectionType.info as any).isDisplayed,
@@ -183,7 +184,7 @@ const LeftMenu = () => {
       />
       {isCollectionTypeOpen && collectionTypesLoaded && <>
       <SubNavLinkCustom
-        href="/admin/plugins/group-sort-strapi-plugin"
+        href={`/admin/plugins/${PLUGIN_ID}`}
         icon={<ArrowLeft />}>
         {formatMessage({
           id: getTranslation('left-menu.back.label'),

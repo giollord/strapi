@@ -29,4 +29,4 @@ const Order2dInput = forwardRef<HTMLInputElement, any>((props, ref) => {
   );
 });
 
-export { Order2dInput };
+export default Order2dInput;

@@ -1,9 +1,8 @@
 export default [
   {
     method: 'GET',
-    path: '/',
-    // name of the controller file & the method.
-    handler: 'controller.index',
+    path: '/itemsAndGroups/:uid',
+    handler: `groups.getItemsWithGroups`,
     config: {
       policies: [],
     },
@@ -11,7 +10,7 @@ export default [
   {
     method: 'GET',
     path: '/groups/:uid',
-    handler: 'controller.getAllGroups',
+    handler: 'groups.getGroupsWithItems',
     config: {
       policies: [],
     },
@@ -19,7 +18,7 @@ export default [
   {
     method: 'GET',
     path: '/groups/:uid/:groupname',
-    handler: 'controller.getGroup',
+    handler: 'groups.getGroup',
     config: {
       policies: [],
     },
@@ -27,7 +26,7 @@ export default [
   {
     method: 'GET',
     path: '/group-names/:uid',
-    handler: 'controller.getGroupNames',
+    handler: 'groups.getGroupNames',
     config: {
       policies: [],
     },

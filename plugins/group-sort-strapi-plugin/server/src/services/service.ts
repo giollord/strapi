@@ -1,7 +1,8 @@
 import type { Core } from '@strapi/strapi';
 import { get } from 'lodash';
-import { GroupResult, GroupResultNames } from '../../../shared/contracts';
+import { GroupResult, GroupResultItem, GroupResultName } from '../../../shared/contracts';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
+import { PLUGIN_ID } from '../../../shared/pluginId';
 
 const THROW_IF_GROUP_NAME_FIELD_NOT_FOUND = false;
 
@@ -15,7 +16,7 @@ const getGroupConfigs = (strapi, uid) => {
 
   for(const key in contentType.attributes) {
     const attr = contentType.attributes[key];
-    const groupNameField = get(attr, ['group-sort-strapi-plugin', 'pluginOptions', 'group', 'groupNameField']) as string;
+    const groupNameField = get(attr, [PLUGIN_ID, 'pluginOptions', 'group', 'groupNameField']) as string;
 
     if(!groupNameField) continue;
     if(!contentType.attributes[groupNameField]) {
@@ -34,10 +35,6 @@ const getGroupConfigs = (strapi, uid) => {
 }
 
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
-  getWelcomeMessage(ctx) {
-    return { hello: 'Welcome to Strapi 🚀' };
-  },
-
   async getGroup(ctx): Promise<GroupResult> {
     const { uid, groupname } = ctx.params;
 
@@ -48,8 +45,8 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     }
 
     const entities = await strapi.db.query(uid).findMany({});
-    const group = {
-      name: groupConfig.groupNameField,
+    const group: GroupResult = {
+      groupName: groupConfig.groupNameField,
       orderField: groupConfig.orderField,
       items: [],
     };
@@ -64,50 +61,60 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     return group;
   },
 
-  async getAllGroups(ctx): Promise<GroupResult[]> {
+  async getItemsWithGroups(ctx): Promise<GroupResultItem[]> {
     const { uid } = ctx.params;
     
     const groupConfigs = getGroupConfigs(strapi, uid);
     const entities = await strapi.db.query(uid).findMany({});
-    const groupsDict: Record<string, {orderField: any, items: any[]}> = {};
+    const result: GroupResultItem[] = [];
 
-    for(const groupConfig of groupConfigs) {
-      const { orderField, groupNameField } = groupConfig;
+    for(const entity of entities) {
+      result.push({
+        item: entity,
+        groups: groupConfigs.map((groupConfig) => ({
+          groupName: get(entity, groupConfig.groupNameField) as string,
+          orderField: groupConfig.orderField,
+        })),
+      });
+    }
+    
+    return result;
+  },
 
-      for(const entity of entities) {
-        const groupName = get(entity, groupNameField) as string;
-        if(!groupName) continue;
+  async getGroupsWithItems(ctx): Promise<GroupResult[]> {
+    const itemsWithGroups = await this.getItemsWithGroups(ctx);
+    const groupsDict: Record<string, GroupResult> = {};
 
-        if(!groupsDict[groupName]) {
-          groupsDict[groupName] = {
-            orderField,
+    for(const item of itemsWithGroups) {
+      for(const group of item.groups) {
+        const key = JSON.stringify(group);
+        if(!groupsDict[key]) {
+          groupsDict[key] = {
+            groupName: group.groupName,
+            orderField: group.orderField,
             items: [],
           };
         }
 
-        groupsDict[groupName].items.push(entity);
+        groupsDict[key].items.push(item.item);
       }
     }
 
-    const groups: GroupResult[] = [];
-    for(const groupName in groupsDict) {
-      groups.push({
-        name: groupName,
-        orderField: groupsDict[groupName].orderField,
-        items: groupsDict[groupName].items,
-      });
-    }
-
-    return groups;
+    return Object.values(groupsDict);
   },
 
-  async getGroupNames(ctx): Promise<GroupResultNames[]> {
-    const groups = await this.getAllGroups(ctx);
-    const groupNames = groups.map((group: GroupResult) => ({
-      name: group.name,
-      orderField: group.orderField
-    }));
-    return groupNames;
+  async getGroupNames(ctx): Promise<GroupResultName[]> {
+    const itemsWithGroups = await this.getItemsWithGroups(ctx);
+    const groupsDict: Record<string, GroupResultName> = {};
+
+    for(const item of itemsWithGroups) {
+      for(const group of item.groups) {
+        const key = JSON.stringify(group);
+        groupsDict[key] = group;
+      }
+    }
+
+    return Object.values(groupsDict);
   }
 });
 

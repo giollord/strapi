@@ -1,5 +1,5 @@
-import controller from './controller';
+import groups from './groups';
 
 export default {
-  controller,
+  groups,
 };
