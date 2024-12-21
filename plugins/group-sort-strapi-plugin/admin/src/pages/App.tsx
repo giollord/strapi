@@ -2,13 +2,17 @@ import { Page } from '@strapi/strapi/admin';
 import { Routes, Route } from 'react-router-dom';
 
 import { HomePage } from './HomePage';
+import { Suspense } from 'react';
 
 const App = () => {
   return (
-    <Routes>
-      <Route index element={<HomePage />} />
-      <Route path="*" element={<Page.Error />} />
-    </Routes>
+    <Suspense fallback={<Page.Loading />}>
+      <Routes>
+        <Route index element={<HomePage />} />
+        <Route path="/:uid" element={<HomePage />} />
+        <Route path="/:uid/:uuuuid" element={<HomePage />} />
+      </Routes>
+    </Suspense>
   );
 };
 

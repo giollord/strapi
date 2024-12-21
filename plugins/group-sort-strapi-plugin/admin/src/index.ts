@@ -1,4 +1,4 @@
-import { PLUGIN_ID } from './pluginId';
+import { PLUGIN_ID } from '../../shared/pluginId';
 import { Initializer } from './components/Initializer';
 import { PluginIcon, OrderIcon } from './components/PluginIcon';
 import { Schema } from '@strapi/strapi';
@@ -12,6 +12,7 @@ const ORDERABLE_FIELDS = [
   'biginteger',
   'float',
   'decimal',
+  'json',
 ];
 
 const GROUPABLE_FIELDS = [
@@ -77,6 +78,28 @@ export default {
       },
       options: {}
     });
+    
+    app.customFields.register({
+      name: 'order2d',
+      type: 'json',
+      pluginId: PLUGIN_ID,
+      intlLabel: {
+        id: getTranslation('order-2d.label'),
+        defaultMessage: 'Order 2D',
+      },
+      intlDescription: {
+        id: getTranslation('order-2d.description'),
+        defaultMessage: 'Position on 2D grid within the group',
+      },
+      icon: OrderIcon,
+      components: {
+        Input: async () =>
+          import('./components/Order2dInput').then((module) => ({
+            default: module.Order2dInput,
+          }))
+      },
+      options: {}
+    });
 
     app.registerPlugin({
       id: PLUGIN_ID,
@@ -110,8 +133,8 @@ export default {
           }),
         }),
         form: {
-          advanced(asdf: any) {
-            const { contentTypeSchema, forTarget, type, step } = asdf;
+          advanced(params: any) {
+            const { contentTypeSchema, forTarget, type, step } = params;
             if (forTarget !== 'contentType') {
               return [];
             }
@@ -150,7 +173,7 @@ export default {
                 },
               },
             ];
-          },
+          }
         },
       });
     }
