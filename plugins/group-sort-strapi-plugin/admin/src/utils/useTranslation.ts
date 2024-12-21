@@ -1,4 +1,4 @@
-import { PLUGIN_ID } from '../pluginId';
+import { PLUGIN_ID } from '../../../shared/pluginId';
 import {
   MessageDescriptor,
   useIntl

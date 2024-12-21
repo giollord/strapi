@@ -33,16 +33,20 @@
   "dependencies": {
     "@strapi/design-system": "^2.0.0-rc.14",
     "@strapi/icons": "^2.0.0-rc.14",
+    "react-async": "10.0.1",
     "react-intl": "^7.0.4",
     "yup": "0.32.9"
   },
   "devDependencies": {
+    "@strapi/content-manager": "workspace:*",
     "@strapi/content-type-builder": "workspace:*",
     "@strapi/sdk-plugin": "^5.2.8",
     "@strapi/strapi": "workspace:*",
+    "@strapi/types": "workspace:*",
     "@strapi/typescript-utils": "workspace:*",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
+    "koa": "2.15.2",
     "prettier": "^3.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

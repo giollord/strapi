@@ -10,8 +10,8 @@ const register = ({ strapi }: { strapi: Core.Strapi }) => {
   });
 
   strapi.customFields.register({
-    name: 'group',
-    type: 'string',
+    name: 'order2d',
+    type: 'json',
     plugin: 'group-sort-strapi-plugin'
   });
 };

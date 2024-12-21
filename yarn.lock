@@ -19548,16 +19548,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "group-sort-strapi-plugin@workspace:plugins/group-sort-strapi-plugin"
   dependencies:
+    "@strapi/content-manager": "workspace:*"
     "@strapi/content-type-builder": "workspace:*"
     "@strapi/design-system": "npm:^2.0.0-rc.14"
     "@strapi/icons": "npm:^2.0.0-rc.14"
     "@strapi/sdk-plugin": "npm:^5.2.8"
     "@strapi/strapi": "workspace:*"
+    "@strapi/types": "workspace:*"
     "@strapi/typescript-utils": "workspace:*"
     "@types/react": "npm:^18.3.1"
     "@types/react-dom": "npm:^18.3.1"
+    koa: "npm:2.15.2"
     prettier: "npm:^3.4.2"
     react: "npm:^18.3.1"
+    react-async: "npm:10.0.1"
     react-dom: "npm:^18.3.1"
     react-intl: "npm:^7.0.4"
     react-router-dom: "npm:^6.28.0"
@@ -26948,6 +26952,15 @@ __metadata:
   bin:
     rc: ./cli.js
   checksum: 10c0/24a07653150f0d9ac7168e52943cc3cb4b7a22c0e43c7dff3219977c2fdca5a2760a304a029c20811a0e79d351f57d46c9bde216193a0f73978496afc2b85b15
+  languageName: node
+  linkType: hard
+
+"react-async@npm:10.0.1":
+  version: 10.0.1
+  resolution: "react-async@npm:10.0.1"
+  peerDependencies:
+    react: ">=16.3.1"
+  checksum: 10c0/1f74566986fb87bd3eede8a83d09af3ea791b8129adcd76c5988c491913bc4a6fd4ab166c1983a36d3ef81e8a2ce5bde093805135b207a53007fd00aae932967
   languageName: node
   linkType: hard
 
