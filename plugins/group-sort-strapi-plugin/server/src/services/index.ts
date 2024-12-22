@@ -1,5 +1,7 @@
-import service from './service';
+import groups from './groups';
+import settings from './settings';
 
 export default {
-  service,
+  groups,
+  settings,
 };

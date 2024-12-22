@@ -12,10 +12,12 @@ import { Box, Button, EmptyStateLayout, Field, Flex, Grid, Modal, NumberInput } 
 import { useTranslation } from '../utils/useTranslation';
 import { Settings } from '..//./../../shared/settings';
 import { Check } from '@strapi/icons';
-import { PLUGIN_ID } from '../../../shared/pluginId';
+import { PLUGIN_ID } from '../../../shared/constants';
+import { useIntl } from 'react-intl';
 
 export const SettingsPage = () => {
   const { formatMessage } = useTranslation();
+  const { formatMessage: formatMessageIntl } = useIntl();
   const { toggleNotification } = useNotification();
   const { get, put } = useFetchClient();
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
@@ -51,7 +53,7 @@ export const SettingsPage = () => {
 
         toggleNotification({
           type: 'success',
-          message: formatMessage({ id: 'plugin.settings.save.success' })?.toString() ?? '',
+          message: formatMessage({ id: 'settings.save.success' }),
         });
       },
       onError(err) {
@@ -80,9 +82,9 @@ export const SettingsPage = () => {
     <Page.Main tabIndex={-1}>
       <Page.Title>
         {formatMessage({
-          id: 'plugin.settings.page.title',
+          id: 'settings.page.title',
           defaultMessage: 'Settings - Sorting',
-        })?.toString() ?? ''}
+        })}
       </Page.Title>
       <form onSubmit={handleSubmit}>
         <Layouts.Header
@@ -94,18 +96,18 @@ export const SettingsPage = () => {
               startIcon={<Check />}
               size="S"
             >
-              {formatMessage({
+              {formatMessageIntl({
                 id: 'global.save',
                 defaultMessage: 'Save',
               })}
             </Button>
           </>}
           title={formatMessage({
-            id: 'plugin.settings.name',
+            id: 'settings.name',
             defaultMessage: 'Sorting',
-          })?.toString()}
+          })}
           subtitle={formatMessage({
-            id: 'plugin.settings.description',
+            id: 'settings.description',
             defaultMessage: 'Configure the settings',
           })}
         />
@@ -131,10 +133,8 @@ export const SettingsPage = () => {
                         <NumberInput
                           value={modifiedData?.horisontalDivisions}
                           onValueChange={value => {
-                            setModifiedData(d => d ? { ...d, horisontalDivisions: value ?? 0 } : null);
-                          }}
-                        />
-                        <Field.Hint />
+                            setModifiedData(d => d ? { ...d, horisontalDivisions: value || 0 } : null);
+                          }} />
                       </Field.Root>
                     </Grid.Item>
                   </Grid.Root>

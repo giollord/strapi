@@ -19564,6 +19564,7 @@ __metadata:
     react-async: "npm:10.0.1"
     react-dom: "npm:^18.3.1"
     react-intl: "npm:^7.0.4"
+    react-query: "npm:3.39.3"
     react-router-dom: "npm:^6.28.0"
     styled-components: "npm:^6.1.13"
     typescript: "npm:^5.7.2"

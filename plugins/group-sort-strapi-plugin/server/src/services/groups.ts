@@ -2,7 +2,7 @@ import type { Core } from '@strapi/strapi';
 import { get } from 'lodash';
 import { GroupResult, GroupResultItem, GroupResultName } from '../../../shared/contracts';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
-import { PLUGIN_ID } from '../../../shared/pluginId';
+import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
 
 const THROW_IF_GROUP_NAME_FIELD_NOT_FOUND = false;
 
@@ -16,9 +16,14 @@ const getGroupConfigs = (strapi, uid) => {
 
   for(const key in contentType.attributes) {
     const attr = contentType.attributes[key];
-    const groupNameField = get(attr, [PLUGIN_ID, 'pluginOptions', 'group', 'groupNameField']) as string;
 
+    if(attr.customField &&
+        !attr.customField.toString().startsWith(`plugin::${PLUGIN_ID}`))
+        continue;
+
+    const groupNameField = get(attr, ['options', 'group', 'groupNameField']) as string;
     if(!groupNameField) continue;
+
     if(!contentType.attributes[groupNameField]) {
       if(THROW_IF_GROUP_NAME_FIELD_NOT_FOUND)
         throw new GroupNameFieldNotFound(groupNameField);
@@ -36,10 +41,10 @@ const getGroupConfigs = (strapi, uid) => {
 
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getGroup(ctx): Promise<GroupResult> {
-    const { uid, groupname } = ctx.params;
+    const { uid, groupField, groupName } = ctx.params;
 
     const groupConfigs = getGroupConfigs(strapi, uid);
-    const groupConfig = groupConfigs.find((groupConfig) => groupConfig.groupNameField === groupname);
+    const groupConfig = groupConfigs.find((groupConfig) => groupConfig.groupNameField === groupName && groupConfig.orderField === groupField);
     if(!groupConfig) {
       return null;
     }
@@ -53,7 +58,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
 
     for(const entity of entities) {
       const groupName = get(entity, groupConfig.groupNameField) as string;
-      if(groupName !== groupname) continue;
+      if(groupName !== groupName) continue;
 
       group.items.push(entity);
     }
@@ -72,7 +77,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
       result.push({
         item: entity,
         groups: groupConfigs.map((groupConfig) => ({
-          groupName: get(entity, groupConfig.groupNameField) as string,
+          groupName: get(entity, groupConfig.groupNameField) as string || UNDEFINED_GROUP_NAME,
           orderField: groupConfig.orderField,
         })),
       });

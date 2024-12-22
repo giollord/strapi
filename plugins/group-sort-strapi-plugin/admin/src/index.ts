@@ -1,4 +1,4 @@
-import { PLUGIN_ID } from '../../shared/pluginId';
+import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../shared/constants';
 import { Initializer } from './components/Initializer';
 import { PluginIcon, OrderIcon } from './components/PluginIcon';
 import { Schema } from '@strapi/strapi';
@@ -40,9 +40,11 @@ const GROUPABLE_FIELDS = [
   //'blocks',
 ];
 
-const fieldValidator: () => Record<string, yup.AnySchema> = () => ({
+const fieldValidator: () => Record<string, yup.AnySchema> =  () => ({
   group: yup.object().shape({
-    groupNameField: yup.string(),
+    groupNameField: yup
+      .string()
+      .not([UNDEFINED_GROUP_NAME, 'null']),
     columnsNumber: yup.number().required().integer().min(1).max(100),
     rowHeight: yup.number().required().min(0.1).max(100),
   }),
@@ -70,8 +72,8 @@ export default {
         id: getTranslation('plugin.name'),
         defaultMessage: 'Internationalization',
       },
-      id: 'internationalization',
-      to: 'internationalization',
+      id: 'sorting',
+      to: 'Sorting',
       Component: () =>
         import('./pages/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
       permissions: [],
@@ -170,10 +172,23 @@ export default {
                   hidden: false,
                 },
               }));
+            availableOptions.push({
+                key: '',
+                value: '',
+                metadatas: {
+                  intlLabel: {
+                    id: getTranslation('pluginOptions.group.noGroup'),
+                    defaultMessage: '<Self>',
+                  },
+                  disabled: false,
+                  hidden: false,
+                },
+              });
 
             return [
               {
-                name: getTranslation('pluginOptions.group.groupNameField'),
+                //name: getTranslation('pluginOptions.group.groupNameField'),
+                name: 'options.group.groupNameField',
                 type: 'select',
                 options: availableOptions,
                 intlLabel: {
@@ -186,9 +201,8 @@ export default {
                 },
               },
               {
-                name: getTranslation('pluginOptions.group.columnsNumber'),
+                name: 'options.group.columnsNumber',
                 type: 'number',
-                value: 12,
                 intlLabel: {
                   id: getTranslation('content-field-editor.layout-columns.label'),
                   defaultMessage: 'Columns',
@@ -199,9 +213,8 @@ export default {
                 },
               },
               {
-                name: getTranslation('pluginOptions.group.rowHeight'),
+                name: 'options.group.rowHeight',
                 type: 'number',
-                value: 3,
                 intlLabel: {
                   id: getTranslation('content-field-editor.row-height.label'),
                   defaultMessage: 'Row height, rem',

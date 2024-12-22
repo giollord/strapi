@@ -22,7 +22,7 @@ const OrderInput = forwardRef<HTMLInputElement, any>((props, ref) => {
           disabled={disabled}
           value={value}
           required={required}
-          placeholder={placeholder || formatMessage({ id: 'order.input.placeholder' })?.toString()}
+          placeholder={placeholder || formatMessage({ id: 'order.input.placeholder' })}
           onValueChange={handleChange} />
         <Field.Hint />
         <Field.Error />
