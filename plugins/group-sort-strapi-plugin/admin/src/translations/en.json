@@ -15,8 +15,6 @@
     "group-arrange-strapi-plugin.content-field-editor.group.description": "Field which will be used to group entries in \"Group and Arrange\" view",
     "group-arrange-strapi-plugin.content-field-editor.layout-columns.label": "Columns",
     "group-arrange-strapi-plugin.content-field-editor.layout-columns.description": "Number of columns in \"Group and Arrange\" view",
-    "group-arrange-strapi-plugin.content-field-editor.row-height.label": "Row height, rem",
-    "group-arrange-strapi-plugin.content-field-editor.row-height.description": "Row height in rem in \"Group and Arrange\" view",
     "group-arrange-strapi-plugin.left-menu.header.name": "Group and Arrange",
     "group-arrange-strapi-plugin.left-menu.search.label": "Search for a content type",
     "group-arrange-strapi-plugin.left-menu.back-to-collecction-types.label": "Back to collection types",
@@ -26,6 +24,15 @@
     "group-arrange-strapi-plugin.settings.save.success": "Settings saved",
     "group-arrange-strapi-plugin.settings.page.title": "Settings - Group and Arrange",
     "group-arrange-strapi-plugin.settings.name": "Group and Arrange",
-    "group-arrange-strapi-plugin.settings.description": "Configure the settings"
-    
+    "group-arrange-strapi-plugin.settings.description": "Configure the settings",
+    "group-arrange-strapi-plugin.arrange.row-height.label": "Row height, px",
+    "group-arrange-strapi-plugin.arrange.row-height.hint": "Controls visual display of rows in the group. Only affects current user.",
+    "group-arrange-strapi-plugin.arrange.row-height.placeholder": "Choose row height, px",
+    "group-arrange-strapi-plugin.arrange.media-select.label": "Media field to display",
+    "group-arrange-strapi-plugin.arrange.media-select.hint": "Option controls what media field will be displayed as items preview in the group. Only affects current user.",
+    "group-arrange-strapi-plugin.arrange.media-select.placeholder": "Choose media field",
+    "group-arrange-strapi-plugin.arrange.title-select.label": "Title field to display",
+    "group-arrange-strapi-plugin.arrange.title-select.hint": "Option controls what text field will be used to display titles. Only affects current user.",
+    "group-arrange-strapi-plugin.arrange.title-select.placeholder": "Choose title field",
+    "group-arrange-strapi-plugin.arrange.empty-item'": "<Empty>"
 }
