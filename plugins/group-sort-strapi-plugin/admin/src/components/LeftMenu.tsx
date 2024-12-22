@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
 import { parse, stringify } from 'qs';
 import { styled } from 'styled-components';
-import { Permission, useQueryParams } from '@strapi/admin/strapi-admin';
+import { Page, Permission, useQueryParams } from '@strapi/admin/strapi-admin';
 import {
   useCollator,
   useFilter,
@@ -17,19 +17,22 @@ import {
 import {useFetchClient} from '@strapi/admin/strapi-admin';
 import { Struct } from '@strapi/types';
 import { ArrowLeft } from '@strapi/icons';
-import { getTranslation } from '../utils/useTranslation';
-import { useAsyncMemo } from '../utils/useAsyncMemo';
-import { PLUGIN_ID } from '../../../shared/pluginId';
+import { getTranslation, useTranslation } from '../utils/useTranslation';
+import { GroupResult, GroupResultName } from '../../../shared/contracts';
+import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
+import { useQuery } from 'react-query';
+import { Rec } from '@strapi/database/dist/query/helpers';
 
 interface ContentManagerLink {
   permissions: Permission[];
   search: string | null;
-  kind: string;
+  kind: string | null;
   title: string;
   to: string;
   uid: string;
   name: string;
   isDisplayed: boolean;
+  placeOnTop?: boolean;
 }
 
 const SubNavHeaderWrapper = styled.div`
@@ -49,14 +52,24 @@ interface LeftMenuProps {
 const LeftMenu = () => {
   const [search, setSearch] = useState('');
   const [{ query }] = useQueryParams<{ plugins?: object }>();
-  const { formatMessage, locale } = useIntl();
-
+  const { formatMessage, locale } = useTranslation();
+  const { formatMessage: formatMessageIntl } = useIntl();
   const fetchClient = useFetchClient();
-  const allCollectionTypes: Struct.ContentTypeSchema[] = useAsyncMemo(async () => {
-    const response = await fetchClient.get('/content-manager/content-types');
-    return response.data.data;
-  }, []) ?? [];
-  const collectionTypes = allCollectionTypes
+
+  const {uid, groupField, groupName} = useParams<{uid: string, groupField: string, groupName: string}>();
+  
+  const isCollectionTypeOpen = Boolean(uid);
+  const isGroupOpen = Boolean(groupName) || groupName === '';
+
+  // Fetch all collection types
+  const { data: allCollectionTypes, isLoading: isFetchingContentTypes } = useQuery({
+    queryKey: [PLUGIN_ID, 'contentTypes'],
+    async queryFn() {
+      const result = await fetchClient.get('/content-manager/content-types');
+      return result.data.data as Struct.ContentTypeSchema[];
+    },
+  });
+  const collectionTypes = (allCollectionTypes || [])
     .filter((collectionType: any) =>
       collectionType.isDisplayed &&
       collectionType.kind === 'collectionType');
@@ -65,30 +78,61 @@ const LeftMenu = () => {
     return acc;
   }, {} as Record<string, Struct.ContentTypeSchema>);
   
-  const {uid, groupname} = useParams<{uid: string, groupname: string}>();
-  const isCollectionTypeOpen = Boolean(uid);
-  const collectionTypesLoaded = collectionTypes.length > 0;
+  // Fetch group names
+  const { data: groupNames, isLoading: isFetchingGroupNames } = useQuery({
+    queryKey: [PLUGIN_ID, 'groups', uid],
+    async queryFn() {
+      const result = await fetchClient.get(`/${PLUGIN_ID}/group-names/${uid}`);
+      return result.data as GroupResultName[];
+    },
+    enabled: Boolean(uid),
+  });
 
-  const tmp = useAsyncMemo(async () => {
-    const response = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}`);
-    console.log(response.data);
-    return response.data;
-  }, [uid]);
+  // Fetch single group data
+  const { data: groupData, isLoading: isFetchingGroups } = useQuery({
+    queryKey: [PLUGIN_ID, 'groups', uid, groupField, groupName],
+    async queryFn() {
+      const result = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}/${groupField}/${groupName}`);
+      return result.data as GroupResult;
+    },
+    enabled: Boolean(uid) && Boolean(groupName),
+  });  
 
-  useEffect(() => {
-    const collectionTypeLinks: ContentManagerLink[] = collectionTypes?.map((collectionType) => ({
-        permissions: [],
-        search: null,
-        kind: collectionType.kind,
-        title: collectionType.info.displayName,
-        to: `/plugins/${PLUGIN_ID}/${collectionType.uid}`,
-        uid: collectionType.uid,
-        name: (collectionType.info as any).name,
-        isDisplayed: (collectionType.info as any).isDisplayed,
-    })) ?? [];
-    setCollectionTypeLinks(collectionTypeLinks);
-  }, [collectionTypes]);
-  const [collectionTypeLinks, setCollectionTypeLinks] = useState<ContentManagerLink[]>();
+  const collectionTypeLinks: ContentManagerLink[] = collectionTypes?.map((collectionType) => ({
+      permissions: [],
+      search: null,
+      kind: collectionType.kind,
+      title: collectionType.info.displayName,
+      to: `/plugins/${PLUGIN_ID}/${collectionType.uid}`,
+      uid: collectionType.uid,
+      name: (collectionType.info as any).name,
+      isDisplayed: (collectionType.info as any).isDisplayed,
+  })) || [];
+  
+  const nameOccurencesCount = groupNames?.reduce((acc, group) => {
+    acc[group.groupName] = (acc[group.groupName] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>) || {};
+  const groupLinks: ContentManagerLink[] = groupNames?.map((group) => {
+    const isUndefined = group.groupName === UNDEFINED_GROUP_NAME;
+    const name = isUndefined ? formatMessage({
+        id: 'left-menu.no-group.label',
+        defaultMessage: 'Sorting',
+      }) : group.groupName;
+    return {
+      permissions: [],
+      search: null,
+      kind: null,
+      placeOnTop: isUndefined,
+      title: nameOccurencesCount[group.groupName] > 1
+        ? `${name} (${group.orderField})`
+        : name,
+      to: `/plugins/${PLUGIN_ID}/${uid}/${group.orderField}/${group.groupName}`,
+      uid: uid!,
+      name: encodeURIComponent(group.groupName),
+      isDisplayed: true,
+    };
+  }) || [];
   
 
   const { startsWith } = useFilter(locale, {
@@ -105,34 +149,41 @@ const LeftMenu = () => {
         {
           id: 'collectionTypes',
           title: formatMessage({
-            id: getTranslation('components.LeftMenu.collection-types'),
+            id: 'left-menu.list.collection-types',
             defaultMessage: 'Collection Types',
           }),
           searchable: true,
+          formattable: true,
           links: collectionTypeLinks,
+          enabled: !isCollectionTypeOpen && !isGroupOpen
         },
-      ].map((section) => ({
+        {
+          id: 'groups',
+          title: formatMessage({
+            id: 'left-menu.list.groups',
+            defaultMessage: 'Groups',
+          }),
+          searchable: true,
+          formattable: false,
+          links: groupLinks,
+          enabled: isCollectionTypeOpen
+        },
+      ].filter((section) => section.enabled)
+      .map((section) => ({
         ...section,
         links: section.links
-          /**
-           * Filter by the search value
-           */
           ?.filter((link) => startsWith(link.title, search))
-          /**
-           * Sort correctly using the language
-           */
-          .sort((a, b) => formatter.compare(a.title, b.title))
-          /**
-           * Apply the formated strings to the links from react-intl
-           */
+          .sort((a, b) => a.placeOnTop ? -1 : formatter.compare(a.title, b.title))
           .map((link) => {
             return {
               ...link,
-              title: formatMessage({ id: link.title, defaultMessage: link.title }),
+              title: section.formattable
+                ? formatMessageIntl({ id: link.title, defaultMessage: link.title })
+                : link.title,
             };
           }),
       })),
-    [collectionTypeLinks, search, startsWith, formatMessage, formatter]
+    [allCollectionTypes, groupData, search, formatMessage, startsWith, formatMessageIntl, formatter]
   );
 
   const handleClear = () => {
@@ -144,7 +195,7 @@ const LeftMenu = () => {
   };
 
   const label = formatMessage({
-    id: getTranslation('header.name'),
+    id: 'left-menu.header.name',
     defaultMessage: 'Sorting',
   });
 
@@ -169,6 +220,12 @@ const LeftMenu = () => {
     return query.plugins;
   };
 
+  const isLoading = isFetchingContentTypes || isFetchingGroupNames || isFetchingGroups;
+
+  if(isLoading) {
+    return <Page.Loading />;
+  }
+
   return (
     <SubNav aria-label={label}>
       <SubNavHeader
@@ -178,22 +235,23 @@ const LeftMenu = () => {
         onChange={handleChangeSearch}
         onClear={handleClear}
         searchLabel={formatMessage({
-          id: getTranslation('left-menu.search.label'),
+          id: 'left-menu.search.label',
           defaultMessage: 'Search for a content type',
         })}
       />
-      {isCollectionTypeOpen && collectionTypesLoaded && <>
+      {isCollectionTypeOpen && collectionTypes.length && <>
       <SubNavLinkCustom
         href={`/admin/plugins/${PLUGIN_ID}`}
         icon={<ArrowLeft />}>
         {formatMessage({
-          id: getTranslation('left-menu.back.label'),
-          defaultMessage: 'Back',
+          id: 'left-menu.back-to-collecction-types.label',
+          defaultMessage: 'Back to collection types',
         })}
       </SubNavLinkCustom>
       <SubNavHeaderWrapper>
         <SubNavHeader label={collectionTypesDict[uid!].info.displayName} />
       </SubNavHeaderWrapper>
+      </>}
       <SubNavSections>
         {menu.map((section) => {
           return (
@@ -215,7 +273,9 @@ const LeftMenu = () => {
                       }),
                     }}
                     width="100%"
+                    isSubSectionChild={false}
                   >
+
                     {link.title}
                   </SubNavLink>
                 );
@@ -224,39 +284,6 @@ const LeftMenu = () => {
           );
         })}
       </SubNavSections>
-      </>}
-      {!isCollectionTypeOpen && collectionTypesLoaded && <>
-      <SubNavSections>
-        {menu.map((section) => {
-          return (
-            <SubNavSection
-              key={section.id}
-              label={section.title}
-              badgeLabel={section.links?.length.toString()}
-            >
-              {section.links?.map((link) => {
-                return (
-                  <SubNavLink
-                    tag={NavLink}
-                    key={link.uid}
-                    to={{
-                      pathname: link.to,
-                      search: stringify({
-                        ...parse(link.search ?? ''),
-                        plugins: getPluginsParamsForLink(link),
-                      }),
-                    }}
-                    width="100%"
-                  >
-                    {link.title}
-                  </SubNavLink>
-                );
-              })}
-            </SubNavSection>
-          );
-        })}
-      </SubNavSections>
-      </>}
     </SubNav>
   );
 };

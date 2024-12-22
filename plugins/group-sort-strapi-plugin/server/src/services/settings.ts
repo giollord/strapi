@@ -1,7 +1,7 @@
 import { Context } from 'koa';
 import { Core } from "@strapi/strapi";
 import { Settings } from "../../../shared/settings";
-import { PLUGIN_ID } from "../../../shared/pluginId";
+import { PLUGIN_ID } from "../../../shared/constants";
 
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getSettings(ctx: Context): Promise<Settings> {

@@ -1,8 +1,8 @@
 import { Context } from 'koa';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
-import { PLUGIN_ID } from '../../../shared/pluginId';
+import { PLUGIN_ID } from '../../../shared/constants';
 
-const service = () => strapi.plugin(PLUGIN_ID).service('service');
+const service = () => strapi.plugin(PLUGIN_ID).service('settings');
 
 const execute = async (ctx, promise): Promise<any> => {
   try {

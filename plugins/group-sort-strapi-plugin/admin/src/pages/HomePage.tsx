@@ -37,7 +37,7 @@ const HomePage = () => {
         {formatMessage({
           id: 'plugin.name',
           defaultMessage: 'Group Sort',
-        })?.toString() || ''}
+        })}
       </Page.Title>
       <Page.Main>
         hello

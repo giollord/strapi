@@ -1,10 +1,8 @@
 import { Field, Flex, JSONInput, NumberInput } from '@strapi/design-system';
 import { forwardRef } from 'react';
-import { useTranslation } from '../utils/useTranslation';
 
 const Order2dInput = forwardRef<HTMLInputElement, any>((props, ref) => {
   const { attribute, hint, disabled = false, labelAction, label, name, required = false, onChange, value, error, placeholder } = props;
-  const { formatMessage } = useTranslation();
 
   const handleChange = (i: string) => {
     onChange({
