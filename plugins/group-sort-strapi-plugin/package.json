@@ -65,12 +65,12 @@
   },
   "strapi": {
     "kind": "plugin",
-    "name": "group-sort-strapi-plugin",
-    "displayName": "Group and Sort",
-    "description": "Allows to group and sort content"
+    "name": "group-arrange-strapi-plugin",
+    "displayName": "Group and Arrange",
+    "description": "Allows to group and arrange content"
   },
-  "name": "group-sort-strapi-plugin",
-  "description": "Allows to group and sort content",
+  "name": "group-arrange-strapi-plugin",
+  "description": "Allows to group and arrange content",
   "license": "MIT",
   "author": "Barkov Daniil <giollord@gmail.com>"
 }

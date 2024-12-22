@@ -1,4 +1,5 @@
 import type { Core } from '@strapi/strapi';
+import { PLUGIN_ID } from '../../shared/constants';
 
 const register = ({ strapi }: { strapi: Core.Strapi }) => {
   // register phase
@@ -6,13 +7,13 @@ const register = ({ strapi }: { strapi: Core.Strapi }) => {
   strapi.customFields.register({
     name: 'order',
     type: 'integer',
-    plugin: 'group-sort-strapi-plugin'
+    plugin: PLUGIN_ID
   });
 
   strapi.customFields.register({
     name: 'order2d',
     type: 'json',
-    plugin: 'group-sort-strapi-plugin'
+    plugin: PLUGIN_ID
   });
 };
 
