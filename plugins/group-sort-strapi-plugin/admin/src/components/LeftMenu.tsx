@@ -117,7 +117,7 @@ const LeftMenu = () => {
     const isUndefined = group.groupName === UNDEFINED_GROUP_NAME;
     const name = isUndefined ? formatMessage({
         id: 'left-menu.no-group.label',
-        defaultMessage: 'Sorting',
+        defaultMessage: 'Group and Arrange',
       }) : group.groupName;
     return {
       permissions: [],
@@ -196,7 +196,7 @@ const LeftMenu = () => {
 
   const label = formatMessage({
     id: 'left-menu.header.name',
-    defaultMessage: 'Sorting',
+    defaultMessage: 'Group and Arrange',
   });
 
   const getPluginsParamsForLink = (link: ContentManagerLink) => {

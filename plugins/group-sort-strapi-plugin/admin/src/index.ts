@@ -73,7 +73,7 @@ export default {
         defaultMessage: 'Internationalization',
       },
       id: 'sorting',
-      to: 'Sorting',
+      to: 'group-and-arrange',
       Component: () =>
         import('./pages/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
       permissions: [],
@@ -197,7 +197,7 @@ export default {
                 },
                 description: {
                   id: getTranslation('content-field-editor.group.description'),
-                  defaultMessage: 'Field which will be used to group entries in "Sort" view',
+                  defaultMessage: 'Field which will be used to group entries in "Group and Arrange" view',
                 },
               },
               {

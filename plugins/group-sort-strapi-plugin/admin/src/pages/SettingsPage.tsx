@@ -83,7 +83,7 @@ export const SettingsPage = () => {
       <Page.Title>
         {formatMessage({
           id: 'settings.page.title',
-          defaultMessage: 'Settings - Sorting',
+          defaultMessage: 'Settings - Group and Arrange',
         })}
       </Page.Title>
       <form onSubmit={handleSubmit}>
@@ -104,7 +104,7 @@ export const SettingsPage = () => {
           </>}
           title={formatMessage({
             id: 'settings.name',
-            defaultMessage: 'Sorting',
+            defaultMessage: 'Group and Arrange',
           })}
           subtitle={formatMessage({
             id: 'settings.description',
