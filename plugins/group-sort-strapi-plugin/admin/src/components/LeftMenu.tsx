@@ -46,29 +46,48 @@ const SubNavLinkCustom = styled(SubNavLink)`
 `;
 
 interface LeftMenuProps {
-  uid: string;
+  uid?: string | undefined;
+  groupField?: string | undefined;
+  groupName?: string | undefined;
+  collectionTypes?: Struct.ContentTypeSchema[] | undefined;
+  groupData?: GroupResult | undefined;
+  groupNames?: GroupResultName[] | undefined;
 }
 
-const LeftMenu = () => {
+function substituteQuery<T>(value: T): { data: T; isLoading: boolean } | null {
+  if (value === undefined || value === null) {
+    return null;
+  }
+  return {
+    data: value,
+    isLoading: false
+  }
+}
+
+const LeftMenu = (props: LeftMenuProps) => {
   const [search, setSearch] = useState('');
   const [{ query }] = useQueryParams<{ plugins?: object }>();
   const { formatMessage, locale } = useTranslation();
   const { formatMessage: formatMessageIntl } = useIntl();
   const fetchClient = useFetchClient();
 
-  const {uid, groupField, groupName} = useParams<{uid: string, groupField: string, groupName: string}>();
+  let {uid, groupField, groupName} = useParams<{uid: string, groupField: string, groupName: string}>();
+  uid = uid || props.uid;
+  groupField = groupField || props.groupField;
+  groupName = groupName || props.groupName;
   
   const isCollectionTypeOpen = Boolean(uid);
   const isGroupOpen = Boolean(groupName) || groupName === '';
 
   // Fetch all collection types
-  const { data: allCollectionTypes, isLoading: isFetchingContentTypes } = useQuery({
-    queryKey: [PLUGIN_ID, 'contentTypes'],
-    async queryFn() {
-      const result = await fetchClient.get('/content-manager/content-types');
-      return result.data.data as Struct.ContentTypeSchema[];
-    },
-  });
+  const { data: allCollectionTypes, isLoading: isFetchingContentTypes } = substituteQuery(props.collectionTypes) ||
+    useQuery({
+      queryKey: [PLUGIN_ID, 'contentTypes'],
+      async queryFn() {
+        const result = await fetchClient.get('/content-manager/content-types');
+        return result.data.data as Struct.ContentTypeSchema[];
+      },
+    });
   const collectionTypes = (allCollectionTypes || [])
     .filter((collectionType: any) =>
       collectionType.isDisplayed &&
@@ -79,24 +98,26 @@ const LeftMenu = () => {
   }, {} as Record<string, Struct.ContentTypeSchema>);
   
   // Fetch group names
-  const { data: groupNames, isLoading: isFetchingGroupNames } = useQuery({
-    queryKey: [PLUGIN_ID, 'groups', uid],
-    async queryFn() {
-      const result = await fetchClient.get(`/${PLUGIN_ID}/group-names/${uid}`);
-      return result.data as GroupResultName[];
-    },
-    enabled: Boolean(uid),
-  });
+  const { data: groupNames, isLoading: isFetchingGroupNames } = substituteQuery(props.groupNames) ||
+    useQuery({
+      queryKey: [PLUGIN_ID, 'groups', uid],
+      async queryFn() {
+        const result = await fetchClient.get(`/${PLUGIN_ID}/group-names/${uid}`);
+        return result.data as GroupResultName[];
+      },
+      enabled: Boolean(uid),
+    });
 
   // Fetch single group data
-  const { data: groupData, isLoading: isFetchingGroups } = useQuery({
-    queryKey: [PLUGIN_ID, 'groups', uid, groupField, groupName],
-    async queryFn() {
-      const result = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}/${groupField}/${groupName}`);
-      return result.data as GroupResult;
-    },
-    enabled: Boolean(uid) && Boolean(groupName),
-  });  
+  const { data: groupData, isLoading: isFetchingGroups } = substituteQuery(props.groupData) ||
+    useQuery({
+      queryKey: [PLUGIN_ID, 'groups', uid, groupField, groupName],
+      async queryFn() {
+        const result = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}/${groupField}/${groupName}`);
+        return result.data as GroupResult;
+      },
+      enabled: Boolean(uid) && Boolean(groupName),
+    });
 
   const collectionTypeLinks: ContentManagerLink[] = collectionTypes?.map((collectionType) => ({
       permissions: [],

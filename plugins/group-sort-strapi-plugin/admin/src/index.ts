@@ -46,7 +46,6 @@ const fieldValidator: () => Record<string, yup.AnySchema> =  () => ({
       .string()
       .not([UNDEFINED_GROUP_NAME, 'null']),
     columnsNumber: yup.number().required().integer().min(1).max(100),
-    rowHeight: yup.number().required().min(0.1).max(100),
   }),
 });
 
@@ -210,18 +209,6 @@ export default {
                 description: {
                   id: getTranslation('content-field-editor.layout-columns.description'),
                   defaultMessage: 'Number of columns in \"Sort\" view',
-                },
-              },
-              {
-                name: 'options.group.rowHeight',
-                type: 'number',
-                intlLabel: {
-                  id: getTranslation('content-field-editor.row-height.label'),
-                  defaultMessage: 'Row height, rem',
-                },
-                description: {
-                  id: getTranslation('content-field-editor.row-height.description'),
-                  defaultMessage: 'Row height in rem in \"Sort\" view',
                 },
               },
             ];

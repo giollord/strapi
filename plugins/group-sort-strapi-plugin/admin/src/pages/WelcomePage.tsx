@@ -1,36 +1,17 @@
-import { DesignSystemProvider, Flex, Main, StrapiTheme, TypographyComponent } from '@strapi/design-system';
+import { Flex, Main, StrapiTheme, TypographyComponent } from '@strapi/design-system';
 import { Typography } from '@strapi/design-system';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useTranslation } from '../utils/useTranslation';
 
 import styled from 'styled-components';
-import { Layouts, Page, useFetchClient } from '@strapi/strapi/admin';
-import { useEffect, useMemo } from 'react';
-import { useAsyncMemo } from '../utils/useAsyncMemo';
+import { Layouts, Page } from '@strapi/strapi/admin';
 
-import { Struct } from '@strapi/types';
 import { LeftMenu } from '../components/LeftMenu';
 import { GridFour } from '@strapi/icons';
 
 
-const HomePage = () => {
+const WelcomePage = () => {
   const { formatMessage } = useTranslation();
-  
-  const fetchClient = useFetchClient();
-  const collectionTypes: any = useAsyncMemo(async () => {
-    const response = await fetchClient.get('/content-manager/content-types');
-    const allCollectionTypes = response.data.data as Struct.ContentTypeSchema[];
-    
-    const filteredCollectionTypes = allCollectionTypes
-    .filter((collectionType: any) =>
-      collectionType.isDisplayed &&
-      collectionType.kind === 'collectionType');
-    return filteredCollectionTypes;
-  }, []);
-  
-  useEffect(() => {
-    console.log(collectionTypes);
-  }, [collectionTypes]);
 
   const MainBox = styled.div`
     margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};
@@ -110,8 +91,4 @@ const HomePage = () => {
   );
 };
 
-const MainHeader = styled<TypographyComponent>(Typography)`
-
-`;
-
-export { HomePage };
+export { WelcomePage };

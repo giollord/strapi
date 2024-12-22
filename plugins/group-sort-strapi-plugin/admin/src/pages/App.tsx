@@ -1,16 +1,17 @@
 import { Page } from '@strapi/strapi/admin';
 import { Routes, Route } from 'react-router-dom';
 
-import { HomePage } from './HomePage';
+import { WelcomePage } from './WelcomePage';
 import { Suspense } from 'react';
+import ArrangePage from './ArrangePage';
 
 const App = () => {
   return (
     <Suspense fallback={<Page.Loading />}>
       <Routes>
-        <Route index element={<HomePage />} />
-        <Route path="/:uid" element={<HomePage />} />
-        <Route path="/:uid/:groupField/:groupName" element={<HomePage />} />
+        <Route index element={<WelcomePage />} />
+        <Route path="/:uid" element={<WelcomePage />} />
+        <Route path="/:uid/:groupField/:groupName" element={<ArrangePage />} />
       </Routes>
     </Suspense>
   );

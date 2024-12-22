@@ -1,5 +1,6 @@
 import type { Core } from '@strapi/strapi';
 import { get } from 'lodash';
+import * as qs from 'qs';
 import { GroupResult, GroupResultItem, GroupResultName } from '../../../shared/contracts';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
 import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
@@ -42,14 +43,23 @@ const getGroupConfigs = (strapi, uid) => {
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getGroup(ctx): Promise<GroupResult> {
     const { uid, groupField, groupName } = ctx.params;
+    const query = qs.parse(ctx.querystring);
 
     const groupConfigs = getGroupConfigs(strapi, uid);
-    const groupConfig = groupConfigs.find((groupConfig) => groupConfig.groupNameField === groupName && groupConfig.orderField === groupField);
+    const groupConfig = groupConfigs.find((groupConfig) => groupConfig.orderField === groupField);
     if(!groupConfig) {
       return null;
     }
 
-    const entities = await strapi.db.query(uid).findMany({});
+    const attributeNames = Object.keys(strapi.contentTypes[uid].attributes);
+    const mediaFields = attributeNames.map((key) => {
+      const attr = strapi.contentTypes[uid].attributes[key];
+      if(attr.type !== 'media') return null;
+
+      return key;
+    }).filter((v) => v);
+
+    const entities = await strapi.documents(uid).findMany({ populate: mediaFields });
     const group: GroupResult = {
       groupName: groupConfig.groupNameField,
       orderField: groupConfig.orderField,
@@ -57,8 +67,8 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     };
 
     for(const entity of entities) {
-      const groupName = get(entity, groupConfig.groupNameField) as string;
-      if(groupName !== groupName) continue;
+      const entityGroupName = get(entity, groupConfig.groupNameField) as string;
+      if(groupName !== entityGroupName) continue;
 
       group.items.push(entity);
     }
@@ -70,7 +80,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     const { uid } = ctx.params;
     
     const groupConfigs = getGroupConfigs(strapi, uid);
-    const entities = await strapi.db.query(uid).findMany({});
+    const entities = await strapi.documents(uid).findMany({});
     const result: GroupResultItem[] = [];
 
     for(const entity of entities) {
