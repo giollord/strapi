@@ -9,31 +9,34 @@ interface SortableItemProps {
   title: string;
   subtitle: string;
   thumbnailUri: string;
-  keep1to1AspectRatio: boolean;
+  resizable: boolean;
 }
 
-const StyledDiv = styled.div`
-  width: 100%;
-  align-self: flex-start;
+const StyledEmptyPictures = styled(EmptyPictures)`
+  margin: 0;
+  padding: 0;
+  width: auto;
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
 `;
 
-const StyledCard = styled(Card)`
-  width: 100%;
-  align-self: flex-start;
-`;
-
-const StyledHeader = styled(CardHeader)`
-  width: 100%;
-  padding-top: 100%;
-  position: relative;
-`;
-
-const Header1to1Container = styled(Box)`
-  position: absolute;
-  top: 0;
-  left: 0;
+const ResizableCard = styled(Card)`
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ResizableCardHeader = styled(CardHeader)`
+  overflow: hidden;
+  flex: 1;
+  
+  div {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 export const SortableItem = (props: SortableItemProps) => {
@@ -47,27 +50,20 @@ export const SortableItem = (props: SortableItemProps) => {
     transition: transitionStr,
     zIndex: isDragging ? 100 : undefined,
     opacity: isDragging ? 0.75 : 1,
+    width: '100%',
   };
 
-  return (
-    <StyledDiv ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <StyledCard>
-        {props.keep1to1AspectRatio &&
-          <StyledHeader>
-            <Header1to1Container>
-              {props.thumbnailUri &&
-                <CardAsset src={props.thumbnailUri} />}
-              {!props.thumbnailUri &&
-                <EmptyPictures style={{ width: "100%", height: "auto" }} />}
-            </Header1to1Container>
-          </StyledHeader>}
-        {!props.keep1to1AspectRatio &&
-          <CardHeader>
-            {props.thumbnailUri &&
-              <CardAsset src={props.thumbnailUri} style={{ objectFit: "contain" }} />}
-            {!props.thumbnailUri &&
-              <EmptyPictures style={{ objectFit: "contain" }} />}
-          </CardHeader>}
+  if(props.resizable) {
+    return (
+      <ResizableCard ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <ResizableCardHeader>
+          {props.thumbnailUri &&
+            <CardAsset src={props.thumbnailUri} />}
+          {!props.thumbnailUri &&
+            <CardAsset>
+              <StyledEmptyPictures style={{ objectFit: "contain", width: '100%' }} />
+            </CardAsset>}
+        </ResizableCardHeader>
         {(props.title || props.subtitle) && (
           <CardBody>
             <CardContent>
@@ -76,7 +72,26 @@ export const SortableItem = (props: SortableItemProps) => {
             </CardContent>
           </CardBody>
         )}
-      </StyledCard>
-    </StyledDiv>
+      </ResizableCard>);
+  }
+  return (
+    <Card ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <CardHeader>
+        {props.thumbnailUri &&
+          <CardAsset src={props.thumbnailUri} />}
+        {!props.thumbnailUri &&
+          <CardAsset>
+            <StyledEmptyPictures style={{ objectFit: "contain", width: '100%' }} />
+          </CardAsset>}
+      </CardHeader>
+      {(props.title || props.subtitle) && (
+        <CardBody>
+          <CardContent>
+            {props.title && <CardTitle>{props.title}</CardTitle>}
+            {props.subtitle && <CardSubtitle>{props.subtitle}</CardSubtitle>}
+          </CardContent>
+        </CardBody>
+      )}
+    </Card>
   );
 }

@@ -142,7 +142,7 @@ const ArrangePage = () => {
         <MainBox>
           <Flex direction="column" alignItems="stretch" gap={4}>
             <StyledUserSettings />
-            { orderType === '1d' && (chosenTitleField || chosenMediaField) &&
+            { orderType === '1d' &&
               <Grid.Root gap={4} gridCols={currentFieldSettings.columnsNumber} flex={1}>
                 <DndContext
                   sensors={sensors}
@@ -153,14 +153,14 @@ const ArrangePage = () => {
                     items={sortables}
                     strategy={rectSortingStrategy}
                   >
-                    {sortables.map(x => itemsDictionary[x]).map(i => 
+                    {sortables.map(x => itemsDictionary[x]).filter(x=>x).map(i => 
                       <Grid.Item key={i.documentId} col={1} m={1}>
                         <SortableItem
                           id={i.documentId}
                           title={chosenTitleField && i.titlesByTitleFields[chosenTitleField]}
                           subtitle=''
                           thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]}
-                          keep1to1AspectRatio={true} />
+                          resizable={false} />
                       </Grid.Item>
                     )}
                   </SortableContext>
@@ -177,14 +177,14 @@ const ArrangePage = () => {
                   rowHeight={localConfig?.rowHeight || 30}
                   compactType={null}
                 >
-                  {layout2d.map(x => itemsDictionary[x.i]).map(i => 
+                  {layout2d.map(x => itemsDictionary[x.i]).filter(x=>x).map(i => 
                     <Grid.Item key={i.documentId} col={1} m={1}>
                       <SortableItem
                         id={i.documentId}
                         title={chosenTitleField && i.titlesByTitleFields[chosenTitleField]}
                         subtitle=''
                         thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]}
-                        keep1to1AspectRatio={false} />
+                        resizable={true} />
                     </Grid.Item>
                   )}
                 </StyledResponsiveGridLayout>
