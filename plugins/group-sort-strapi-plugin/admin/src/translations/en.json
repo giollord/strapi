@@ -28,7 +28,7 @@
     "group-arrange-strapi-plugin.arrange.row-height.label": "Row height, px",
     "group-arrange-strapi-plugin.arrange.row-height.hint": "Controls visual display of rows in the group. Only affects current user.",
     "group-arrange-strapi-plugin.arrange.row-height.placeholder": "Choose row height, px",
-    "group-arrange-strapi-plugin.arrange.empty-item": "&lt;Empty&gt;",
+    "group-arrange-strapi-plugin.arrange.empty-item": "<Empty>",
     "group-arrange-strapi-plugin.arrange.media-select.label": "Media field to display",
     "group-arrange-strapi-plugin.arrange.media-select.hint": "Option controls what media field will be displayed as items preview in the group. Only affects current user.",
     "group-arrange-strapi-plugin.arrange.media-select.placeholder": "Choose media field",
