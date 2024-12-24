@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
 import { parse, stringify } from 'qs';
@@ -17,11 +17,12 @@ import {
 import {useFetchClient} from '@strapi/admin/strapi-admin';
 import { Struct } from '@strapi/types';
 import { ArrowLeft } from '@strapi/icons';
-import { getTranslation, useTranslation } from '../utils/useTranslation';
+import { getTranslation, useTranslation } from '../hooks/useTranslation';
 import { GroupResult, GroupResultName } from '../../../shared/contracts';
 import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
 import { useQuery } from 'react-query';
 import { Rec } from '@strapi/database/dist/query/helpers';
+import { GroupAndArrangeContext } from './GroupAndArrangeContextProvider';
 
 interface ContentManagerLink {
   permissions: Permission[];
@@ -45,15 +46,6 @@ const SubNavLinkCustom = styled(SubNavLink)`
   color: ${({ theme }) => (theme as StrapiTheme).colors.primary600};
 `;
 
-interface LeftMenuProps {
-  uid?: string | undefined;
-  groupField?: string | undefined;
-  groupName?: string | undefined;
-  collectionTypes?: Struct.ContentTypeSchema[] | undefined;
-  groupData?: GroupResult | undefined;
-  groupNames?: GroupResultName[] | undefined;
-}
-
 function substituteQuery<T>(value: T): { data: T; isLoading: boolean } | null {
   if (value === undefined || value === null) {
     return null;
@@ -64,60 +56,28 @@ function substituteQuery<T>(value: T): { data: T; isLoading: boolean } | null {
   }
 }
 
-const LeftMenu = (props: LeftMenuProps) => {
+const LeftMenu = () => {
   const [search, setSearch] = useState('');
   const [{ query }] = useQueryParams<{ plugins?: object }>();
   const { formatMessage, locale } = useTranslation();
   const { formatMessage: formatMessageIntl } = useIntl();
-  const fetchClient = useFetchClient();
 
-  let {uid, groupField, groupName} = useParams<{uid: string, groupField: string, groupName: string}>();
-  uid = uid || props.uid;
-  groupField = groupField || props.groupField;
-  groupName = groupName || props.groupName;
+  const {
+    collectionTypes,
+    groupNames,
+    contentTypeUid,
+    groupName,
+    groupData,
+    isLoading} = useContext(GroupAndArrangeContext);
+
   
-  const isCollectionTypeOpen = Boolean(uid);
+  const isCollectionTypeOpen = Boolean(contentTypeUid);
   const isGroupOpen = Boolean(groupName) || groupName === '';
 
-  // Fetch all collection types
-  const { data: allCollectionTypes, isLoading: isFetchingContentTypes } = substituteQuery(props.collectionTypes) ||
-    useQuery({
-      queryKey: [PLUGIN_ID, 'contentTypes'],
-      async queryFn() {
-        const result = await fetchClient.get('/content-manager/content-types');
-        return result.data.data as Struct.ContentTypeSchema[];
-      },
-    });
-  const collectionTypes = (allCollectionTypes || [])
-    .filter((collectionType: any) =>
-      collectionType.isDisplayed &&
-      collectionType.kind === 'collectionType');
-  const collectionTypesDict = collectionTypes.reduce((acc, collectionType) => {
+  const collectionTypesDict = (collectionTypes || []).reduce((acc, collectionType) => {
     acc[collectionType.uid] = collectionType;
     return acc;
   }, {} as Record<string, Struct.ContentTypeSchema>);
-  
-  // Fetch group names
-  const { data: groupNames, isLoading: isFetchingGroupNames } = substituteQuery(props.groupNames) ||
-    useQuery({
-      queryKey: [PLUGIN_ID, 'groups', uid],
-      async queryFn() {
-        const result = await fetchClient.get(`/${PLUGIN_ID}/group-names/${uid}`);
-        return result.data as GroupResultName[];
-      },
-      enabled: Boolean(uid),
-    });
-
-  // Fetch single group data
-  const { data: groupData, isLoading: isFetchingGroups } = substituteQuery(props.groupData) ||
-    useQuery({
-      queryKey: [PLUGIN_ID, 'groups', uid, groupField, groupName],
-      async queryFn() {
-        const result = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}/${groupField}/${groupName}`);
-        return result.data as GroupResult;
-      },
-      enabled: Boolean(uid) && Boolean(groupName),
-    });
 
   const collectionTypeLinks: ContentManagerLink[] = collectionTypes?.map((collectionType) => ({
       permissions: [],
@@ -148,8 +108,8 @@ const LeftMenu = (props: LeftMenuProps) => {
       title: nameOccurencesCount[group.groupName] > 1
         ? `${name} (${group.orderField})`
         : name,
-      to: `/plugins/${PLUGIN_ID}/${uid}/${group.orderField}/${group.groupName}`,
-      uid: uid!,
+      to: `/plugins/${PLUGIN_ID}/${contentTypeUid}/${group.orderField}/${group.groupName}`,
+      uid: contentTypeUid!,
       name: encodeURIComponent(group.groupName),
       isDisplayed: true,
     };
@@ -204,7 +164,7 @@ const LeftMenu = (props: LeftMenuProps) => {
             };
           }),
       })),
-    [allCollectionTypes, groupData, search, formatMessage, startsWith, formatMessageIntl, formatter]
+    [collectionTypes, groupData, search, formatMessage, startsWith, formatMessageIntl, formatter]
   );
 
   const handleClear = () => {
@@ -241,8 +201,6 @@ const LeftMenu = (props: LeftMenuProps) => {
     return query.plugins;
   };
 
-  const isLoading = isFetchingContentTypes || isFetchingGroupNames || isFetchingGroups;
-
   if(isLoading) {
     return <Page.Loading />;
   }
@@ -260,7 +218,7 @@ const LeftMenu = (props: LeftMenuProps) => {
           defaultMessage: 'Search for a content type',
         })}
       />
-      {isCollectionTypeOpen && collectionTypes.length && <>
+      {isCollectionTypeOpen && collectionTypes?.length && <>
       <SubNavLinkCustom
         href={`/admin/plugins/${PLUGIN_ID}`}
         icon={<ArrowLeft />}>
@@ -270,7 +228,7 @@ const LeftMenu = (props: LeftMenuProps) => {
         })}
       </SubNavLinkCustom>
       <SubNavHeaderWrapper>
-        <SubNavHeader label={collectionTypesDict[uid!].info.displayName} />
+        <SubNavHeader label={collectionTypesDict[contentTypeUid!].info.displayName} />
       </SubNavHeaderWrapper>
       </>}
       <SubNavSections>

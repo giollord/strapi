@@ -7,6 +7,7 @@ export interface Settings {
 export interface LocalConfig {
   chosenMediaField: string;
   chosenTitleField: string;
+  chosenSubtitleField: string;
   rowHeight: number;
 }
 

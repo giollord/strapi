@@ -1,6 +1,6 @@
 import { Field, Flex, NumberInput } from '@strapi/design-system';
 import { forwardRef } from 'react';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 
 const OrderInput = forwardRef<HTMLInputElement, any>((props, ref) => {
   const { attribute, hint, disabled = false, labelAction, label, name, required = false, onChange, value, error, placeholder } = props;

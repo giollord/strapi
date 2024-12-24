@@ -43,6 +43,7 @@
     "yup": "0.32.9"
   },
   "devDependencies": {
+    "@simbathesailor/use-what-changed": "2.0.0",
     "@strapi/content-manager": "workspace:*",
     "@strapi/content-type-builder": "workspace:*",
     "@strapi/sdk-plugin": "^5.2.8",

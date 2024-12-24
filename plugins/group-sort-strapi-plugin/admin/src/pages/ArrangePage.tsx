@@ -1,116 +1,52 @@
-import { Box, Button, DesignSystemProvider, Field, Flex, Grid, Main, NumberInput, SingleSelect, SingleSelectOption, StrapiTheme, TypographyComponent } from '@strapi/design-system';
-import { Typography } from '@strapi/design-system';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useTranslation } from '../utils/useTranslation';
-import GridLayout, { Responsive, WidthProvider } from "react-grid-layout";
+import { Box, Button, Flex, Grid, Main, StrapiTheme } from '@strapi/design-system';
+import { useIntl } from 'react-intl';
+import { useTranslation } from '../hooks/useTranslation';
+import GridLayout, { WidthProvider } from "react-grid-layout";
 
 import styled from 'styled-components';
-import { Layouts, Page, useFetchClient } from '@strapi/strapi/admin';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Layouts, Page } from '@strapi/strapi/admin';
+import { useContext, useEffect, useState } from 'react';
 
-import { Struct } from '@strapi/types';
 import { LeftMenu } from '../components/LeftMenu';
-import { Check, GridFour } from '@strapi/icons';
+import { Check } from '@strapi/icons';
 import withReactGridStyles from './ArrangePage.Styles';
-import { LocalConfig, LocalSettings, OrderFieldConfiguration } from '../../../shared/settings'
-import { useLocalStorage } from 'react-use';
-import { LOCAL_SETTINGS_KEY, PLUGIN_ID } from '../../../shared/constants';
-import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
-import { get, merge } from 'lodash';
-import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
+import { get } from 'lodash';
+import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { SortableItem } from '../components/SortableItem';
-import { GroupResult } from '../../../shared/contracts';
-import { c } from 'tar';
+import { SortableItem } from '../components/ArrangePage/SortableItem';
+import { UserSettings } from '../components/ArrangePage/UserSettings';
+import { GroupAndArrangeContext } from '../components/GroupAndArrangeContextProvider';
 
-// DocumentVersion
 
 const StyledResponsiveGridLayout = withReactGridStyles(WidthProvider(GridLayout));
 
-const GridItem = ({ children }: { children: React.ReactNode }) => (
-  <Grid.Item xs={12} s={6} m={4}>{children}</Grid.Item>
-);
-
-const GridRoot = styled(Grid.Root)`
+const StyledUserSettings = styled(UserSettings)`
   align-items: flex-start;
+`;
+
+const MainBox = styled(Box)`
+  margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};
+  padding: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
+  background-color: ${({ theme }) => (theme as StrapiTheme).colors.neutral0};
 `;
 
 const ArrangePage = () => {
   const { formatMessage } = useTranslation();
   const { formatMessage: formatMessageIntl } = useIntl();
 
-  let {uid, groupField, groupName} = useParams<{uid: string, groupField: string, groupName: string}>();
+  const { contentTypeUid, groupField, groupName, orderType, mediaAttributeNames, titleAttributeNames, groupData, currentAttribute, currentFieldSettings, isLoading, chosenMediaField, chosenTitleField, localConfig, collectionTypes } = useContext(GroupAndArrangeContext);
+  if(!contentTypeUid || !groupField || !groupName) {
+    return <Page.Error />;
+  }
 
-  const [localSettings, setLocalSettings] = useLocalStorage<LocalSettings>(LOCAL_SETTINGS_KEY, {
-    configs: {},
-  });
-  const localSettingsKey = `${uid}/${groupField}/${groupName}`;
-  const currentLocalSettings = localSettings?.configs?.[localSettingsKey];
-  const updateLocalSettings = useCallback((newSettings: LocalConfig) => {
-    setLocalSettings(merge({}, localSettings, {
-      configs: {
-        [localSettingsKey]: newSettings,
-      },
-    } as LocalSettings));
-  }, [localSettings, setLocalSettings, uid, groupField, groupName]);
-
-  const [chosenMediaField, setChosenMediaField] = useState<string | undefined>(currentLocalSettings?.chosenMediaField);
-  const [chosenTitleField, setChosenTitleField] = useState<string | undefined>(currentLocalSettings?.chosenTitleField);
+  const [isModified, setIsModified] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
-    setChosenMediaField(currentLocalSettings?.chosenMediaField);
-    setChosenTitleField(currentLocalSettings?.chosenTitleField);
-  }, [localSettings, uid, groupField, groupName]);
-  
-  const fetchClient = useFetchClient();
-  const { data: collectionTypes, isLoading: isFetchingContentTypes } = useQuery({
-    queryKey: [PLUGIN_ID, 'contentTypes'],
-    async queryFn() {
-      const result = await fetchClient.get('/content-manager/content-types');
-      const allCollectionTypes = result.data.data as Struct.ContentTypeSchema[];
-
-      const filteredCollectionTypes = allCollectionTypes
-        .filter((collectionType: any) =>
-          collectionType.isDisplayed &&
-          collectionType.kind === 'collectionType');
-      return filteredCollectionTypes;
-    },
-  });
-  const currentCollectionType = collectionTypes?.find((collectionType) => collectionType.uid === uid);
-  const mediaAttributeNames = Object.keys(currentCollectionType?.attributes || {}).filter((attributeName) => {
-    const attribute = currentCollectionType?.attributes[attributeName];
-    return attribute?.type === 'media';
-  });
-  const titleAttributeNames = Object.keys(currentCollectionType?.attributes || {}).filter((attributeName) => {
-    const attribute = currentCollectionType?.attributes[attributeName];
-    return attribute?.type === 'string';
-  });
-
-  const currentAttribute = Object.keys(currentCollectionType?.attributes || {}).map((attributeName) => {
-    const attribute = currentCollectionType?.attributes[attributeName];
-    if(attributeName !== groupField) {
-      return null;
-    }
-    const isOrder = (attribute as any)?.customField === `plugin::${PLUGIN_ID}.order`;
-    const isOrder2d = (attribute as any)?.customField === `plugin::${PLUGIN_ID}.order2d`;
-    return {
-      ...attribute,
-      isOrder,
-      isOrder2d
-    };
-  }).filter((x) => x)[0];
-  const currentFieldSettings = (currentAttribute as any)?.options.group as OrderFieldConfiguration;
-
-  const {data: groupData, isLoading: isFetchingGroups} = useQuery({
-    queryKey: [PLUGIN_ID, 'groups', uid, groupField, groupName],
-    async queryFn() {
-      const result = await fetchClient.get(`/${PLUGIN_ID}/groups/${uid}/${groupField}/${groupName}`);
-      return result.data as GroupResult;
-    }
-  });
+    setIsModified(false);
+    setIsSaving(false);
+  }, [contentTypeUid, groupField, groupName]);
   
   const [itemsDictionary, setItemsDictionary] = useState({} as Record<string, any>);
-  const [sortables, setSortables] = useState([] as string[]);
   useEffect(() => {
     const itemsDictionary = (groupData?.items || []).reduce((acc: Record<string, any>, item) => {
       acc[item.documentId] = {
@@ -133,27 +69,25 @@ const ArrangePage = () => {
       };
       return acc;
     }, {});
-    setSortables(Object.keys(itemsDictionary));
+
     setItemsDictionary(itemsDictionary);
-  }, [groupData, collectionTypes]);
-
-  const MainBox = styled.div`
-    margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};
-    padding: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
-    background-color: ${({ theme }) => (theme as StrapiTheme).colors.neutral0};
-  `;
-
-  const GridFourCustom = styled(GridFour)`
-    margin-right: ${({ theme }) => (theme as StrapiTheme).spaces[2]};
-    width: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
-    height: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
-  `;
-  
-  const layout = [
-    { i: "a", x: 0, y: 0, w: 1, h: 2, static: true },
-    { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-    { i: "c", x: 4, y: 0, w: 1, h: 2 }
-  ];
+    if (currentAttribute?.isOrder) {
+      setSortables(Object.keys(itemsDictionary));
+    }
+    if(currentAttribute?.isOrder2d) {
+      const layout2d = (groupData?.items || []).map((item, index): GridLayout.Layout => ({
+        i: item.documentId,
+        x: 1,
+        y: 1,
+        w: 1,
+        h: 1,
+      }));
+      setLayout2d(layout2d);
+    }
+    
+  }, [groupData, collectionTypes, currentAttribute]);
+  const [sortables, setSortables] = useState([] as string[]);
+  const [layout2d, setLayout2d] = useState([] as GridLayout.Layout[]);
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -162,9 +96,7 @@ const ArrangePage = () => {
     })
   );
 
-  const isLoading = isFetchingContentTypes || isFetchingGroups;
-
-  if (isLoading) {
+  if (isLoading || !currentFieldSettings) {
     return <Page.Loading />;
   }
 
@@ -181,8 +113,11 @@ const ArrangePage = () => {
     }
   }
 
+  function handleSave(): void {
+  }
+
   return (
-    <Layouts.Root sideNav={<LeftMenu collectionTypes={collectionTypes} />}>
+    <Layouts.Root sideNav={<LeftMenu />}>
       <Layouts.Header
         title={formatMessage({
           id: 'plugin.name',
@@ -191,10 +126,10 @@ const ArrangePage = () => {
         primaryAction={
           <Flex gap={2}>
             <Button
-              disabled={isLoading}
-              //loading={isSubmitting}
+              disabled={isLoading || !isModified}
+              loading={isSaving}
               startIcon={<Check />}
-              type="submit"
+              onClick={handleSave}
               size="S"
             >
               {formatMessageIntl({
@@ -203,120 +138,12 @@ const ArrangePage = () => {
               })}
             </Button>
           </Flex>} />
-      <Main>
+      <Main style={{ marginTop: "-24px"}}>
         <MainBox>
           <Flex direction="column" alignItems="stretch" gap={4}>
-            <GridRoot gap={4}>
-              <GridItem>
-                <Field.Root
-                    hint={formatMessage({
-                      id: 'arrange.media-select.hint',
-                      defaultMessage: 'Option controls what media field will be displayed as items preview in the group. Only affects current user.',
-                    })}
-                    width="100%">
-                  <Field.Label>
-                    {formatMessage({
-                      id: 'arrange.media-select.label',
-                      defaultMessage: 'Media field to display',
-                    })}
-                  </Field.Label>
-                  <SingleSelect
-                    placeholder={formatMessage({
-                      id: 'arrange.media-select.placeholder',
-                      defaultMessage: 'Choose media field',
-                    })}
-                    value={chosenMediaField || ''}
-                    onChange={(value) => {
-                      updateLocalSettings({
-                        ...currentLocalSettings!,
-                        chosenMediaField: value.toString()
-                      })}}
-                      >
-                    {mediaAttributeNames.concat(['']).map((mediaAttributeName) => (
-                      <SingleSelectOption
-                        key={mediaAttributeName}
-                        value={mediaAttributeName}>
-                        {mediaAttributeName || formatMessage({
-                          id: 'arrange.empty-item',
-                          defaultMessage: '<Empty>',
-                        })}
-                      </SingleSelectOption>
-                    ))}
-                  </SingleSelect>
-                  <Field.Hint />
-                </Field.Root>
-              </GridItem>
-              <GridItem>
-                <Field.Root
-                    hint={formatMessage({
-                      id: 'arrange.title-select.hint',
-                      defaultMessage: 'Option controls what text field will be used to display titles. Only affects current user.',
-                    })}
-                    width="100%">
-                  <Field.Label>
-                    {formatMessage({
-                      id: 'arrange.title-select.label',
-                      defaultMessage: 'Title field to display',
-                    })}
-                  </Field.Label>
-                  <SingleSelect
-                    placeholder={formatMessage({
-                      id: 'arrange.title-select.placeholder',
-                      defaultMessage: 'Choose title field',
-                    })}
-                    value={chosenTitleField || ''}
-                    onChange={(value) => {
-                      updateLocalSettings({
-                        ...currentLocalSettings!,
-                        chosenTitleField: value.toString()
-                      })}}
-                      >
-                    {titleAttributeNames.concat(['']).map((titleAttributeName) => (
-                      <SingleSelectOption
-                        key={titleAttributeName}
-                        value={titleAttributeName}>
-                        {titleAttributeName || formatMessage({
-                          id: 'arrange.empty-item',
-                          defaultMessage: '<Empty>',
-                        })}
-                      </SingleSelectOption>
-                    ))}
-                  </SingleSelect>
-                  <Field.Hint />
-                </Field.Root>
-              </GridItem>
-              <GridItem>
-                <Field.Root
-                    hint={formatMessage({
-                      id: 'arrange.row-height.hint',
-                      defaultMessage: 'Controls visual display of rows in the group. Only affects current user.',
-                    })}
-                    width="100%">
-                  <Field.Label>
-                    {formatMessage({
-                      id: 'arrange.row-height.label',
-                      defaultMessage: 'Row height, px',
-                    })}
-                  </Field.Label>
-                  <NumberInput
-                    value={currentLocalSettings?.rowHeight || 30}
-                    onValueChange={(value: number | undefined): void => {
-                      updateLocalSettings({
-                        ...currentLocalSettings!,
-                        rowHeight: value!
-                      });
-                    }}
-                    placeholder={formatMessage({
-                      id: 'arrange.row-height.placeholder',
-                      defaultMessage: 'Choose row height, px'
-                    })}
-                    />
-                  <Field.Hint />
-                </Field.Root>
-              </GridItem>
-            </GridRoot>
-            { currentAttribute?.isOrder && (chosenTitleField || chosenMediaField) &&
-              <Grid.Root gap={4} gridCols={currentFieldSettings?.columnsNumber} flex={1}>
+            <StyledUserSettings />
+            { orderType === '1d' && (chosenTitleField || chosenMediaField) &&
+              <Grid.Root gap={4} gridCols={currentFieldSettings.columnsNumber} flex={1}>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -328,28 +155,38 @@ const ArrangePage = () => {
                   >
                     {sortables.map(x => itemsDictionary[x]).map(i => 
                       <Grid.Item key={i.documentId} col={1} m={1}>
-                        <SortableItem id={i.documentId}
+                        <SortableItem
+                          id={i.documentId}
                           title={chosenTitleField && i.titlesByTitleFields[chosenTitleField]}
                           subtitle=''
-                          thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]} />
+                          thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]}
+                          keep1to1AspectRatio={true} />
                       </Grid.Item>
                     )}
                   </SortableContext>
                 </DndContext>
               </Grid.Root>
             }
-            { currentAttribute?.isOrder2d &&
+            { orderType === '2d' &&
               <Box position="relative" width="100%">
                 <StyledResponsiveGridLayout
                   className="layout"
-                  layout={layout}
+                  layout={layout2d}
+                  onLayoutChange={setLayout2d}
                   cols={currentFieldSettings.columnsNumber}
-                  rowHeight={currentLocalSettings?.rowHeight || 30}
+                  rowHeight={localConfig?.rowHeight || 30}
                   compactType={null}
                 >
-                  <div key="a" style={{backgroundColor: "blue"}}>a</div>
-                  <div key="b" style={{backgroundColor: "aqua"}}>b</div>
-                  <div key="c" style={{backgroundColor: "green"}}>c</div>
+                  {layout2d.map(x => itemsDictionary[x.i]).map(i => 
+                    <Grid.Item key={i.documentId} col={1} m={1}>
+                      <SortableItem
+                        id={i.documentId}
+                        title={chosenTitleField && i.titlesByTitleFields[chosenTitleField]}
+                        subtitle=''
+                        thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]}
+                        keep1to1AspectRatio={false} />
+                    </Grid.Item>
+                  )}
                 </StyledResponsiveGridLayout>
               </Box>
             }
