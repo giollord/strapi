@@ -4,7 +4,7 @@ import { PluginIcon, OrderIcon } from './components/PluginIcon';
 import { Schema } from '@strapi/strapi';
 import { StrapiApp } from '@strapi/strapi/admin';
 import * as yup from 'yup';
-import { getTranslation } from './utils/useTranslation';
+import { getTranslation } from './hooks/useTranslation';
 
 const ORDERABLE_FIELDS = [
   'number',

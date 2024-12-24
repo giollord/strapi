@@ -9,7 +9,7 @@ import {
 } from '@strapi/admin/strapi-admin';
 import { Box, Button, EmptyStateLayout, Field, Flex, Grid, Modal, NumberInput } from '@strapi/design-system';
 
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { Settings } from '..//./../../shared/settings';
 import { Check } from '@strapi/icons';
 import { PLUGIN_ID } from '../../../shared/constants';

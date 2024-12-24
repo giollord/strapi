@@ -1,7 +1,7 @@
 import { Flex, Main, StrapiTheme, TypographyComponent } from '@strapi/design-system';
 import { Typography } from '@strapi/design-system';
 import { FormattedMessage } from 'react-intl';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 
 import styled from 'styled-components';
 import { Layouts, Page } from '@strapi/strapi/admin';

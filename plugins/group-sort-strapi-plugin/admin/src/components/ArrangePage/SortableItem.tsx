@@ -9,6 +9,7 @@ interface SortableItemProps {
   title: string;
   subtitle: string;
   thumbnailUri: string;
+  keep1to1AspectRatio: boolean;
 }
 
 const StyledDiv = styled.div`
@@ -36,30 +37,37 @@ const Header1to1Container = styled(Box)`
 `;
 
 export const SortableItem = (props: SortableItemProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: props.id });
+  const sortable = useSortable({ id: props.id });
+  const { setNodeRef, isDragging, listeners, attributes, transition, transform } = sortable
 
-  const style = {
+  const transitionStr = [transition || (!isDragging && 'transform 0.2s ease')].concat('opacity 0.5s ease').filter(x=>x).join(', ');
+
+  const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
-    transition,
+    transition: transitionStr,
+    zIndex: isDragging ? 100 : undefined,
+    opacity: isDragging ? 0.75 : 1,
   };
 
   return (
     <StyledDiv ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <StyledCard>
-        <StyledHeader>
-          <Header1to1Container>
+        {props.keep1to1AspectRatio &&
+          <StyledHeader>
+            <Header1to1Container>
+              {props.thumbnailUri &&
+                <CardAsset src={props.thumbnailUri} />}
+              {!props.thumbnailUri &&
+                <EmptyPictures style={{ width: "100%", height: "auto" }} />}
+            </Header1to1Container>
+          </StyledHeader>}
+        {!props.keep1to1AspectRatio &&
+          <CardHeader>
             {props.thumbnailUri &&
-              <CardAsset src={props.thumbnailUri} />}
+              <CardAsset src={props.thumbnailUri} style={{ objectFit: "contain" }} />}
             {!props.thumbnailUri &&
-              <EmptyPictures style={{ width: "100%", height: "auto" }} />}
-          </Header1to1Container>
-        </StyledHeader>
+              <EmptyPictures style={{ objectFit: "contain" }} />}
+          </CardHeader>}
         {(props.title || props.subtitle) && (
           <CardBody>
             <CardContent>
