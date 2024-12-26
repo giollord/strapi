@@ -9,7 +9,7 @@ const Order2dInput = forwardRef<HTMLInputElement, any>((props, ref) => {
 
   const handleChange = (i: string) => {
     onChange({
-      target: { name, type: attribute.type, value: i },
+      target: { name, type: attribute.type, value: JSON.parse(i) },
     });
   };
 
@@ -20,7 +20,7 @@ const Order2dInput = forwardRef<HTMLInputElement, any>((props, ref) => {
         <JSONInput
           ref={ref}
           disabled={disabled}
-          value={value}
+          value={JSON.stringify(value, null, 2)}
           required={required}
           onChange={handleChange} />
         <Field.Hint />

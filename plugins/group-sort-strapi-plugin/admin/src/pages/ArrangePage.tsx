@@ -207,13 +207,14 @@ const ArrangePage = () => {
     }
     if (currentAttribute?.isOrder2d) {
       for (const item of layout2d) {
+        const stringified = JSON.stringify({
+          x: item.x,
+          y: item.y,
+          w: item.w,
+          h: item.h
+        }, null, 2);
         await fetchClient.put(`/content-manager/collection-types/${currentCollectionType?.uid}/${item.i}`, {
-          [groupField!]: {
-            x: item.x,
-            y: item.y,
-            w: item.w,
-            h: item.h
-          }
+          [groupField!]: stringified
         });
       }
     }
