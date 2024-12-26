@@ -2,7 +2,6 @@ import type { Core } from '@strapi/strapi';
 import { Settings } from '../../shared/settings';
 import { PLUGIN_ID } from '../../shared/constants';
 import { get, set } from 'lodash';
-import { c } from 'tar';
 
 const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
   // bootstrap phase

@@ -9,6 +9,11 @@ export interface UseGroupDataParams {
   groupName: string | undefined;
 }
 
+/**
+ * Fetches group data (of type GroupResult) from the Strapi API
+ * @param props - The parameters to fetch the group data, including the content type UID, group field, and group name
+ * @returns The group data
+ */
 const useGroupData = (props: UseGroupDataParams) => {
   const { contentTypeUid, groupField, groupName } = props;
 

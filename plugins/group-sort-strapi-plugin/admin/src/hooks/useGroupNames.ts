@@ -7,6 +7,11 @@ export interface UseGroupNamesParams {
     contentTypeUid: string | undefined;
 }
 
+/**
+ * Fetches group names from the Strapi API
+ * @param props - The parameters to fetch the group names, including the content type UID
+ * @returns The group names
+ */
 const useGroupNames = (props: UseGroupNamesParams) => {
   const { contentTypeUid } = props;
   

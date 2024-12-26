@@ -1,5 +1,6 @@
 {
     "group-arrange-strapi-plugin.plugin.name": "Group and Arrange",
+    "group-arrange-strapi-plugin.plugin.description": "This plugin allows you to group and arrange content types in the Strapi admin panel. Choose collection and group in panel to the left to get started!",
     "group-arrange-strapi-plugin.plugin.settings.name": "Group and Arrange",
     "group-arrange-strapi-plugin.plugin.settings.description": "Configure the plugin",
     "group-arrange-strapi-plugin.plugin.settings.page.title": "Settings - Group and Arrange",

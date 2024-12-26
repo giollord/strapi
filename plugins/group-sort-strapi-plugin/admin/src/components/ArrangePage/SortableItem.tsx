@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Box, Card, CardAsset, CardBody, CardContent, CardHeader, CardSubtitle, CardTitle } from '@strapi/design-system';
+import { Card, CardAsset, CardBody, CardContent, CardHeader, CardSubtitle, CardTitle } from '@strapi/design-system';
 import styled from 'styled-components';
 import { EmptyPictures } from '@strapi/icons/symbols';
 
@@ -39,6 +39,9 @@ const ResizableCardHeader = styled(CardHeader)`
   }
 `;
 
+/**
+ * SortableItem component, used in ArrangePage to display sortable item with title, subtitle and thumbnail
+ */
 export const SortableItem = (props: SortableItemProps) => {
   const sortable = useSortable({ id: props.id });
   const { setNodeRef, isDragging, listeners, attributes, transition, transform } = sortable

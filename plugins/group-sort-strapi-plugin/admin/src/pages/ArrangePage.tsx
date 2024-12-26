@@ -48,6 +48,7 @@ const ArrangePage = () => {
     titleAttributeNames,
     chosenMediaField,
     chosenTitleField,
+    chosenSubtitleField,
     localConfig,
     currentCollectionType,
     collectionTypes,
@@ -287,7 +288,7 @@ const ArrangePage = () => {
                         <SortableItem
                           id={i.documentId}
                           title={chosenTitleField && i.titlesByTitleFields[chosenTitleField]}
-                          subtitle=''
+                          subtitle={chosenSubtitleField && i.titlesByTitleFields[chosenSubtitleField]}
                           thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]}
                           resizable={false} />
                       </Grid.Item>
@@ -311,7 +312,7 @@ const ArrangePage = () => {
                       <SortableItem
                         id={i.documentId}
                         title={chosenTitleField && i.titlesByTitleFields[chosenTitleField]}
-                        subtitle=''
+                        subtitle={chosenSubtitleField && i.titlesByTitleFields[chosenSubtitleField]}
                         thumbnailUri={chosenMediaField && i.thumbnailUrisByMediaFields[chosenMediaField]}
                         resizable={true} />
                     </Grid.Item>

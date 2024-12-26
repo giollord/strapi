@@ -29,6 +29,11 @@ const GridFourCustom = styled(GridFour)`
   height: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
 `;
 
+// TODO: "plugin.instructions" is not put to translations
+
+/**
+ * WelcomePage component, used as the main page of the plugin
+ */
 const WelcomePage = () => {
   const { formatMessage } = useTranslation();
 

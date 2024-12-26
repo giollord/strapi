@@ -8,7 +8,7 @@ import { ReactNode } from 'react';
 import { Options as IntlMessageFormatOptions } from 'intl-messageformat';
 
 
-export const getTranslation = (id: string | undefined) => `${PLUGIN_ID}.${id}`;
+export const getTrad = (id: string | undefined) => `${PLUGIN_ID}.${id}`;
 export const useTranslation = () => {
   const intl = useIntl();
 
@@ -23,7 +23,7 @@ export const useTranslation = () => {
     opts?: IntlMessageFormatOptions
   ): string | ReactNode {
     const formattedMessage = intl.formatMessage(
-      { ...descriptor, id: getTranslation(descriptor.id) },
+      { ...descriptor, id: getTrad(descriptor.id) },
       values,
       opts
     );

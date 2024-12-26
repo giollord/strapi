@@ -3,6 +3,7 @@ import { LocalConfig, OrderFieldConfiguration } from '../../../shared/settings';
 import { PLUGIN_ID } from '../../../shared/constants';
 import { Attribute } from '@strapi/types/dist/schema';
 import { useEffect, useState } from 'react';
+import { set } from 'lodash';
 
 export interface UseAttributeNamesParams {
   contentTypeUid: string | undefined,
@@ -11,11 +12,17 @@ export interface UseAttributeNamesParams {
   collectionTypes: Struct.ContentTypeSchema[] | undefined
 }
 
+/**
+ * Hook to get attribute data
+ * @param props - The parameters to get the attribute data, including the content type UID, group field, local configuration and collection types
+ * @returns The attribute data
+ */
 export const useAttributeData = (props: UseAttributeNamesParams) => {
   const { contentTypeUid, groupField, localConfig, collectionTypes } = props;
 
   const [chosenMediaField, setChosenMediaField] = useState<string | undefined>(undefined);
   const [chosenTitleField, setChosenTitleField] = useState<string | undefined>(undefined);
+  const [chosenSubtitleField, setChosenSubtitleField] = useState<string | undefined>(undefined);
   const [mediaAttributeNames, setMediaAttributeNames] = useState<string[]>([]);
   const [titleAttributeNames, setTitleAttributeNames] = useState<string[]>([]);
   const [currentAttribute, setCurrentAttribute] = useState<(Attribute.AnyAttribute & { isOrder: boolean, isOrder2d: boolean }) | null>(null);
@@ -26,6 +33,7 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
     const collectionType = collectionTypes?.find((collectionType) => collectionType.uid === contentTypeUid);
     setChosenMediaField(localConfig?.chosenMediaField);
     setChosenTitleField(localConfig?.chosenTitleField);
+    setChosenSubtitleField(localConfig?.chosenSubtitleField);
     setCurrentCollectionType(collectionType);
 
     if (collectionType) {
@@ -63,6 +71,7 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
   return {
     mediaAttributeNames,
     titleAttributeNames,
+    chosenSubtitleField,
     chosenMediaField,
     chosenTitleField,
     currentAttribute,

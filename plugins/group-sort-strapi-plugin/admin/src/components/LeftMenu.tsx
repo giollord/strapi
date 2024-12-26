@@ -1,6 +1,6 @@
 import { useContext, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { parse, stringify } from 'qs';
 import { styled } from 'styled-components';
 import { Page, Permission, useQueryParams } from '@strapi/admin/strapi-admin';
@@ -14,14 +14,10 @@ import {
   SubNavSections,
   StrapiTheme
 } from '@strapi/design-system';
-import {useFetchClient} from '@strapi/admin/strapi-admin';
 import { Struct } from '@strapi/types';
 import { ArrowLeft } from '@strapi/icons';
-import { getTranslation, useTranslation } from '../hooks/useTranslation';
-import { GroupResult, GroupResultMeta } from '../../../shared/contracts';
+import { useTranslation } from '../hooks/useTranslation';
 import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
-import { useQuery } from 'react-query';
-import { Rec } from '@strapi/database/dist/query/helpers';
 import { GroupAndArrangeContext } from './GroupAndArrangeContextProvider';
 
 interface ContentManagerLink {
@@ -46,22 +42,12 @@ const SubNavLinkCustom = styled(SubNavLink)`
   color: ${({ theme }) => (theme as StrapiTheme).colors.primary600};
 `;
 
-function substituteQuery<T>(value: T): { data: T; isLoading: boolean } | null {
-  if (value === undefined || value === null) {
-    return null;
-  }
-  return {
-    data: value,
-    isLoading: false
-  }
-}
-
 const LeftMenu = () => {
-  const [search, setSearch] = useState('');
-  const [{ query }] = useQueryParams<{ plugins?: object }>();
   const { formatMessage, locale } = useTranslation();
   const { formatMessage: formatMessageIntl } = useIntl();
 
+  // search text
+  const [search, setSearch] = useState('');
   const {
     collectionTypes,
     groupNames,
@@ -69,16 +55,19 @@ const LeftMenu = () => {
     groupName,
     groupData,
     isLoading} = useContext(GroupAndArrangeContext);
-
   
+  // indicates whether the collection type is open. Can be false on the main page of plugin
   const isCollectionTypeOpen = Boolean(contentTypeUid);
+  // indicates whether group under collection type is open
   const isGroupOpen = Boolean(groupName) || groupName === '';
 
+  // dictionary of collection types by their uid
   const collectionTypesDict = (collectionTypes || []).reduce((acc, collectionType) => {
     acc[collectionType.uid] = collectionType;
     return acc;
   }, {} as Record<string, Struct.ContentTypeSchema>);
 
+  // links to collection type pages
   const collectionTypeLinks: ContentManagerLink[] = collectionTypes?.map((collectionType) => ({
       permissions: [],
       search: null,
@@ -90,10 +79,12 @@ const LeftMenu = () => {
       isDisplayed: (collectionType.info as any).isDisplayed,
   })) || [];
   
+  // counts of group occurrences by name. Used to determine whether to put order field to parentheses in the title
   const nameOccurencesCount = groupNames?.reduce((acc, group) => {
     acc[group.groupName] = (acc[group.groupName] || 0) + 1;
     return acc;
   }, {} as Record<string, number>) || {};
+  // links to group pages
   const groupLinks: ContentManagerLink[] = groupNames?.map((group) => {
     const isUndefined = group.groupName === UNDEFINED_GROUP_NAME;
     const name = isUndefined ? formatMessage({
@@ -115,6 +106,7 @@ const LeftMenu = () => {
     };
   }) || [];
   
+  // stuff below mostly taken from LeftMenu of content-manager plugin
 
   const { startsWith } = useFilter(locale, {
     sensitivity: 'base',
@@ -180,27 +172,6 @@ const LeftMenu = () => {
     defaultMessage: 'Group and Arrange',
   });
 
-  const getPluginsParamsForLink = (link: ContentManagerLink) => {
-    const schema = collectionTypes?.find((schema: any) => schema.uid === link.uid);
-    const isI18nEnabled = Boolean((schema?.pluginOptions?.i18n as any)?.localized);
-
-    // The search params have the i18n plugin
-    if (query.plugins && 'i18n' in query.plugins) {
-      // Prepare removal of i18n from the plugins search params
-      const { i18n, ...restPlugins } = query.plugins;
-
-      // i18n is not enabled, remove it from the plugins search params
-      if (!isI18nEnabled) {
-        return restPlugins;
-      }
-
-      // i18n is enabled, put the plugins search params back together
-      return { i18n, ...restPlugins };
-    }
-
-    return query.plugins;
-  };
-
   if(isLoading) {
     return <Page.Loading />;
   }
@@ -247,8 +218,7 @@ const LeftMenu = () => {
                     to={{
                       pathname: link.to,
                       search: stringify({
-                        ...parse(link.search ?? ''),
-                        plugins: getPluginsParamsForLink(link),
+                        ...parse(link.search ?? '')
                       }),
                     }}
                     width="100%"

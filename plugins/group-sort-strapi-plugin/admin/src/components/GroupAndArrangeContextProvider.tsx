@@ -2,7 +2,7 @@ import { useLocalStorage } from "react-use";
 import { LocalConfig, LocalSettings, OrderFieldConfiguration } from "../../../shared/settings";
 import { LOCAL_SETTINGS_KEY } from "../../../shared/constants";
 import { useParams } from "react-router-dom";
-import { createContext, useState } from "react";
+import { createContext } from "react";
 import useCollectionTypes from "../hooks/useCollectionTypes";
 import useLocalConfig from "../hooks/useLocalConfig";
 import useGroupData from "../hooks/useGroupData";
@@ -24,6 +24,7 @@ export interface GroupAndArrangeContextValue {
   localConfig: LocalConfig | null;
   chosenMediaField: string | null;
   chosenTitleField: string | null;
+  chosenSubtitleField: string | null;
   mediaAttributeNames: string[];
   titleAttributeNames: string[];
   currentAttribute: (Attribute.AnyAttribute & {
@@ -42,6 +43,9 @@ export interface GroupAndArrangeContextSetters {
   setLocalConfig: (config: any) => void;
 }
 
+/**
+ * Provider for the GroupAndArrangeContext, holds pretty much all the state for the plugin
+ */
 export const GroupAndArrangeContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [localSettings, setLocalSettings] = useLocalStorage<LocalSettings>(LOCAL_SETTINGS_KEY, {
     configs: {},
@@ -52,7 +56,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
   const { groupData, isLoading: isLoadingGroupData } = useGroupData({ contentTypeUid, groupField, groupName });
   const { groupNames, isLoading: isFetchingGroupNames } = useGroupNames({ contentTypeUid });
 
-  const { chosenMediaField, chosenTitleField, mediaAttributeNames, titleAttributeNames, currentAttribute, currentCollectionType, currentFieldSettings } = useAttributeData({
+  const { chosenMediaField, chosenTitleField, chosenSubtitleField, mediaAttributeNames, titleAttributeNames, currentAttribute, currentCollectionType, currentFieldSettings } = useAttributeData({
     contentTypeUid,
     groupField,
     localConfig,
@@ -72,6 +76,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
     localConfig: localConfig || null,
     chosenMediaField: chosenMediaField || null,
     chosenTitleField: chosenTitleField || null,
+    chosenSubtitleField: chosenSubtitleField || null,
     mediaAttributeNames,
     titleAttributeNames,
     currentAttribute: currentAttribute || null,
