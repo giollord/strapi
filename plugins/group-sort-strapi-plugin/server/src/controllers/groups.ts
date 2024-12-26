@@ -19,16 +19,16 @@ const execute = async (ctx, promise): Promise<any> => {
 
 const groups = {
   async getItemsWithGroups(ctx: Context) {
-    execute(ctx, service().getItemsWithGroups(ctx) as Promise<GroupResultItem[]>);
+    await execute(ctx, service().getItemsWithGroups(ctx) as Promise<GroupResultItem[]>);
   },
   async getGroup(ctx: Context) {
-    execute(ctx, service().getGroup(ctx) as Promise<GroupResult>);
+    await execute(ctx, service().getGroup(ctx) as Promise<GroupResult>);
   },
   async getGroupsWithItems(ctx: Context) {
-    execute(ctx, service().getGroupsWithItems(ctx) as Promise<GroupResult[]>);
+    await execute(ctx, service().getGroupsWithItems(ctx) as Promise<GroupResult[]>);
   },
   async getGroupNames(ctx: Context) {
-    execute(ctx, service().getGroupNames(ctx) as Promise<GroupResultMeta[]>);
+    await execute(ctx, service().getGroupNames(ctx) as Promise<GroupResultMeta[]>);
   }
 };
 
