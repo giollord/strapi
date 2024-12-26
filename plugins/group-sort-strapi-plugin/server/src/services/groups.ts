@@ -45,7 +45,11 @@ const getGroupConfigs = (strapi, uid) => {
 
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getGroup(ctx): Promise<GroupResult> {
-    const { uid, groupField, groupName } = ctx.params;
+    const { uid, groupField } = ctx.params;
+    let groupName = ctx.params.groupName as string;
+    if(groupName === UNDEFINED_GROUP_NAME) {
+      groupName = undefined;
+    }
 
     const groupConfigs = getGroupConfigs(strapi, uid);
     const groupConfig = groupConfigs.find((groupConfig) => groupConfig.orderField === groupField);
