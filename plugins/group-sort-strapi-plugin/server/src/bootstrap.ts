@@ -13,7 +13,7 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
   const config: any = await configurator.get({}) ?? {};
 
   for (const [key, defaultValue] of Object.entries(defaultConfig)) {
-    if(!get(config, key)) {
+    if(get(config, key) === undefined) {
       set(config, key, get(defaultConfig, key));
     }
   }

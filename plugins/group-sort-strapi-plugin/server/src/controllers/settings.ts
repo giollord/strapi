@@ -20,10 +20,10 @@ const execute = async (ctx, promise): Promise<any> => {
 
 const settings = {
   async getSettings(ctx: Context) {
-    execute(ctx, service().getSettings(ctx));
+    await execute(ctx, service().getSettings(ctx));
   },
   async updateSettings(ctx: Context) {
-    execute(ctx, service().updateSettings(ctx));
+    await execute(ctx, service().updateSettings(ctx));
   }
 };
 
