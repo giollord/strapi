@@ -1,49 +1,10 @@
-import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../shared/constants';
+import { GROUPABLE_FIELDS, ORDERABLE_2D_FIELDS, ORDERABLE_FIELDS, PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../shared/constants';
 import { Initializer } from './components/Initializer';
 import { PluginIcon, OrderIcon } from './components/PluginIcon';
 import { Schema } from '@strapi/strapi';
 import { StrapiApp } from '@strapi/strapi/admin';
 import * as yup from 'yup';
 import { getTrad } from './hooks/useTranslation';
-
-const ORDERABLE_1D_FIELDS = [
-  'number',
-  'integer',
-  'biginteger',
-  'float',
-  'decimal',
-]
-
-const ORDERABLE_2D_FIELDS = [
-  'json',
-];
-
-const ORDERABLE_FIELDS = ORDERABLE_1D_FIELDS.concat(ORDERABLE_2D_FIELDS);
-
-const GROUPABLE_FIELDS = [
-  'string',
-  'text',
-  'richtext',
-  'email',
-  'password',
-  'date',
-  'time',
-  'datetime',
-  'timestamp',
-  'integer',
-  'biginteger',
-  'float',
-  'decimal',
-  'uid',
-  'enumeration',
-  'boolean',
-  'json',
-  'media',
-  'relation',  
-  //'component',
-  //'dynamiczone',
-  //'blocks',
-];
 
 const fieldValidator: () => Record<string, yup.AnySchema> =  () => ({
   group: yup.object().shape({
