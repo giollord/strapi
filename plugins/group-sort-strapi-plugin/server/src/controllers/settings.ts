@@ -7,22 +7,24 @@ const service = () => strapi.plugin(PLUGIN_ID).service('settings');
 const execute = async (ctx, promise): Promise<any> => {
   try {
     const result = await promise;
-    ctx.body = result;
+    if(result) {
+      ctx.body = result;
+    }
   } catch (error) {
-    if (error instanceof ContentTypeNotFoundError || error instanceof GroupNameFieldNotFound) {
+    if (error instanceof ContentTypeNotFoundError) {
       return ctx.badRequest(error.message);
     }
     return ctx.internalServerError(error.message);
   }
 }
 
-const groups = {
-  async getItemsWithGroups(ctx: Context) {
-    execute(ctx, service().getItemsWithGroups(ctx));
+const settings = {
+  async getSettings(ctx: Context) {
+    execute(ctx, service().getSettings(ctx));
   },
-  async getGroup(ctx: Context) {
-    execute(ctx, service().getGroup(ctx));
+  async updateSettings(ctx: Context) {
+    execute(ctx, service().updateSettings(ctx));
   }
 };
 
-export default groups;
+export default settings;

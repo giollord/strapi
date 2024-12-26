@@ -4,10 +4,10 @@ import { FormattedMessage } from 'react-intl';
 import { useTranslation } from '../hooks/useTranslation';
 
 import styled from 'styled-components';
-import { Layouts, Page } from '@strapi/strapi/admin';
 
 import { LeftMenu } from '../components/LeftMenu';
 import { GridFour } from '@strapi/icons';
+import { Layouts, Page } from '@strapi/strapi/admin';
 
 const MainBox = styled.div`
   margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};

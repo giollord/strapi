@@ -2,7 +2,7 @@ export default [
   {
     method: 'GET',
     path: '/settings',
-    handler: `groups.getItemsWithGroups`,
+    handler: `settings.getSettings`,
     config: {
       policies: [],
     },
@@ -10,7 +10,7 @@ export default [
   {
     method: 'PUT',
     path: '/settings',
-    handler: 'groups.getGroupsWithItems',
+    handler: 'settings.updateSettings',
     config: {
       policies: [],
     },

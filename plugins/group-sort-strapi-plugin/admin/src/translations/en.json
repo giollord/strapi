@@ -31,6 +31,8 @@
     "group-arrange-strapi-plugin.settings.page.title": "Settings - Group and Arrange",
     "group-arrange-strapi-plugin.settings.name": "Group and Arrange",
     "group-arrange-strapi-plugin.settings.description": "Configure the settings",
+    "group-arrange-strapi-plugin.settings.always-show-field-type.label": "Always show field type in list",
+    "group-arrange-strapi-plugin.settings.always-show-field-type.description": "When enabled, the field type will always be shown in the list of fields to the left.",
     "group-arrange-strapi-plugin.arrange.unsaved-changes": "You have unsaved changes. Are you sure you want to leave?",
     "group-arrange-strapi-plugin.arrange.saved": "Changes saved",
     "group-arrange-strapi-plugin.arrange.row-height.label": "Row height, px",

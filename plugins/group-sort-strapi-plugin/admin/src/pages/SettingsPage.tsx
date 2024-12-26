@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useCallback, useState } from 'react';
+import { useMutation } from 'react-query';
 
 import {
   Page,
@@ -7,40 +7,32 @@ import {
   Layouts,
   useFetchClient,
 } from '@strapi/admin/strapi-admin';
-import { Box, Button, EmptyStateLayout, Field, Flex, Grid, Modal, NumberInput } from '@strapi/design-system';
+import { Box, Button, EmptyStateLayout, Field, Flex, Grid, Modal, NumberInput, Toggle } from '@strapi/design-system';
 
 import { useTranslation } from '../hooks/useTranslation';
 import { Settings } from '..//./../../shared/settings';
 import { Check } from '@strapi/icons';
 import { PLUGIN_ID } from '../../../shared/constants';
 import { useIntl } from 'react-intl';
+import useSettings from '../hooks/useSettings';
+import { isEqual } from 'lodash';
 
 // TODO: unused at the moment
 export const SettingsPage = () => {
   const { formatMessage } = useTranslation();
   const { formatMessage: formatMessageIntl } = useIntl();
   const { toggleNotification } = useNotification();
-  const { get, put } = useFetchClient();
+  const { put } = useFetchClient();
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
-  
-  const { data, isLoading: isFetching, refetch } = useQuery({
-    queryKey: [PLUGIN_ID, 'settings'],
-    async queryFn() {
-      const {
-        data: { data },
-      } = await get(`/${PLUGIN_ID}/settings`);
+  const { settings, isLoading: isFetching, refetch } = useSettings();
+  const [modifiedData, setModifiedData] = useState<Settings | null>(settings || null);
 
-      setModifiedData(data);
-      return data;
-    },
-  });
-
-  const [modifiedData, setModifiedData] = useState<Settings | null>(data);
-  useEffect(() => {
-    const dataWasModified = JSON.stringify(data) !== JSON.stringify(modifiedData);
+  const updateValues = useCallback((updateValue: (settings: Settings) => Settings | null) => {
+    const value = updateValue(modifiedData || settings!) || modifiedData;
+    const dataWasModified = !isEqual(modifiedData, value);
     setIsSaveButtonDisabled(!dataWasModified);
-    setModifiedData(data);
-  }, [modifiedData]);
+    setModifiedData(value || null);
+  }, []);
 
   const { mutateAsync, isLoading: isSubmitting } = useMutation<Settings, any, Settings>(
     async (body) => {
@@ -121,20 +113,28 @@ export const SettingsPage = () => {
                     <Grid.Item col={6} s={12} direction="column" alignItems="stretch">
                       <Field.Root
                         hint={formatMessage({
-                          id: 'settings.form.responsiveDimensions.description',
+                          id: 'settings.always-show-field-type.description',
                           defaultMessage:
-                            'Enabling this option will generate multiple formats (small, medium and large) of the uploaded asset.',
+                            'When enabled, the field type will always be shown in the list of fields to the left.',
                         })}
-                        title={formatMessage({
-                          id: 'settings.form.responsiveDimensions.label',
-                          defaultMessage: 'Responsive friendly upload',
-                        })?.toString()}
-                        name="responsiveDimensions"
+                        name="alwaysShowFieldTypeInList"
                       >
-                        <NumberInput
-                          value={modifiedData?.horisontalDivisions}
-                          onValueChange={value => {
-                            setModifiedData(d => d ? { ...d, horisontalDivisions: value || 0 } : null);
+                        <Field.Label>{formatMessage({
+                          id: 'settings.always-show-field-type.label',
+                          defaultMessage: 'Always show field type in list',
+                        })}</Field.Label>
+                        <Toggle
+                          offLabel={formatMessageIntl({
+                            id: 'app.components.ToggleCheckbox.off-label',
+                            defaultMessage: 'Off',
+                          })}
+                          onLabel={formatMessageIntl({
+                            id: 'app.components.ToggleCheckbox.on-label',
+                            defaultMessage: 'On',
+                          })}
+                          checked={modifiedData?.alwaysShowFieldTypeInList}
+                          onChange={e => {
+                            updateValues(d => d ? { ...d, alwaysShowFieldTypeInList: e.target.checked } : null);
                           }} />
                       </Field.Root>
                     </Grid.Item>
