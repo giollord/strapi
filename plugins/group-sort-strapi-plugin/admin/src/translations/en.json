@@ -47,5 +47,11 @@
     "group-arrange-strapi-plugin.arrange.title-select.placeholder": "Choose title field",
     "group-arrange-strapi-plugin.arrange.subtitle-select.label": "Subtitle field to display",
     "group-arrange-strapi-plugin.arrange.subtitle-select.hint": "Option controls what text field will be used to display subtitles. Only affects current user.",
-    "group-arrange-strapi-plugin.arrange.subtitle-select.placeholder": "Choose subtitle field"
+    "group-arrange-strapi-plugin.arrange.subtitle-select.placeholder": "Choose subtitle field",
+    "group-arrange-strapi-plugin.arrange.direction.hint": "Controls the direction of the 2d order. Only affects current session.",
+    "group-arrange-strapi-plugin.arrange.direction.label": "Direction",
+    "group-arrange-strapi-plugin.arrange.direction.placeholder": "Choose direction",
+    "group-arrange-strapi-plugin.arrange.direction.horizontal": "Horizontal",
+    "group-arrange-strapi-plugin.arrange.direction.vertical": "Vertical",
+    "group-arrange-strapi-plugin.arrange.direction.none": "<None>"
 }

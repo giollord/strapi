@@ -2,7 +2,7 @@ import { useLocalStorage } from "react-use";
 import { LocalConfig, LocalSettings, OrderFieldConfiguration, Settings } from "../../../shared/settings";
 import { LOCAL_SETTINGS_KEY } from "../../../shared/constants";
 import { useParams } from "react-router-dom";
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import useCollectionTypes from "../hooks/useCollectionTypes";
 import useLocalConfig from "../hooks/useLocalConfig";
 import useGroupData from "../hooks/useGroupData";
@@ -26,6 +26,7 @@ export interface GroupAndArrangeContextValue {
   chosenMediaField: string | null;
   chosenTitleField: string | null;
   chosenSubtitleField: string | null;
+  chosenDirection: 'horizontal' | 'vertical' | null;
   mediaAttributeNames: string[];
   titleAttributeNames: string[];
   currentAttribute: (Attribute.AnyAttribute & {
@@ -43,6 +44,7 @@ export interface GroupAndArrangeContextValue {
 export interface GroupAndArrangeContextSetters {
   setLocalSettings: (newConfig: LocalSettings) => void;
   setLocalConfig: (config: any) => void;
+  setChosenDirection: (direction: 'horizontal' | 'vertical' | null) => void;
 }
 
 /**
@@ -64,7 +66,12 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
     groupField,
     localConfig,
     collectionTypes
-  })
+  });
+  
+  const [chosenDirection, setChosenDirection] = useState(currentFieldSettings?.order2dDirection);
+  useEffect(() => {
+    setChosenDirection(currentFieldSettings?.order2dDirection);
+  }, [currentFieldSettings]);
 
   const localConfigKey =  contentTypeUid && groupField && groupName ? `${contentTypeUid}/${groupField}/${groupName}` : null;
   const isLoading = isLoadingCollectionTypes || isLoadingGroupData || isFetchingGroupNames || isFetchingSettings;
@@ -80,6 +87,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
     chosenMediaField: chosenMediaField || null,
     chosenTitleField: chosenTitleField || null,
     chosenSubtitleField: chosenSubtitleField || null,
+    chosenDirection: chosenDirection || null,
     mediaAttributeNames,
     titleAttributeNames,
     currentAttribute: currentAttribute || null,
@@ -91,6 +99,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
     globalSettings: settings || null,
     setLocalSettings,
     setLocalConfig,
+    setChosenDirection
   };
 
   return (
