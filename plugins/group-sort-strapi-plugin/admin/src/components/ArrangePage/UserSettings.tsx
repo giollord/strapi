@@ -57,7 +57,7 @@ const SelectField = (props: SelectFieldProps) => {
  */
 export const UserSettings = () => {
   const { formatMessage } = useTranslation();
-  const { chosenMediaField, chosenTitleField, mediaAttributeNames, titleAttributeNames, localConfig, currentAttribute, setLocalConfig } = useContext(GroupAndArrangeContext);
+  const { chosenMediaField, chosenTitleField, chosenDirection, mediaAttributeNames, titleAttributeNames, localConfig, currentAttribute, setLocalConfig, setChosenDirection } = useContext(GroupAndArrangeContext);
 
   const emptyItemContent = formatMessage({
     id: 'arrange.empty-item',
@@ -168,6 +168,57 @@ export const UserSettings = () => {
                 defaultMessage: 'Choose row height, px'
               })}
             />
+            <Field.Hint />
+          </Field.Root>
+        </GridItem>
+      }
+      {currentAttribute?.isOrder2d && 
+        <GridItem>
+          <Field.Root
+            hint={formatMessage({
+              id: 'arrange.direction.hint',
+              defaultMessage: 'Controls the direction of the 2d order. Only affects current session.',
+            })}
+            width="100%">
+            <Field.Label>
+              {formatMessage({
+                id: 'arrange.direction.label',
+                defaultMessage: 'Direction'
+              })}
+            </Field.Label>
+            <SingleSelect
+              placeholder={formatMessage({
+                id: 'arrange.direction.placeholder',
+                defaultMessage: 'Choose direction'
+              })}
+              value={chosenDirection}
+              onChange={x => setChosenDirection((x || null) as 'horizontal' | 'vertical' | null)}
+            >
+              <SingleSelectOption
+                key='horizontal'
+                value='horizontal'>
+                {formatMessage({
+                  id: 'arrange.direction.horizontal',
+                  defaultMessage: 'Horizontal'
+                })}
+              </SingleSelectOption>
+              <SingleSelectOption
+                key='vertical'
+                value='vertical'>
+                {formatMessage({
+                  id: 'arrange.direction.vertical',
+                  defaultMessage: 'Vertical'
+                })}
+              </SingleSelectOption>
+              <SingleSelectOption
+                key=''
+                value=''>
+                  {formatMessage({
+                    id: 'arrange.direction.none',
+                    defaultMessage: '<None>'
+                  })}
+              </SingleSelectOption>
+            </SingleSelect>
             <Field.Hint />
           </Field.Root>
         </GridItem>

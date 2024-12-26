@@ -49,6 +49,7 @@ const ArrangePage = () => {
     chosenMediaField,
     chosenTitleField,
     chosenSubtitleField,
+    chosenDirection,
     localConfig,
     currentCollectionType,
     collectionTypes,
@@ -306,7 +307,7 @@ const ArrangePage = () => {
                   onLayoutChange={handleLayout2dChange}
                   cols={currentFieldSettings.columnsNumber}
                   rowHeight={localConfig?.rowHeight || 30}
-                  compactType={currentFieldSettings?.order2dDirection || null}
+                  compactType={chosenDirection || null}
                 >
                   {layout2d.map(x => itemsDictionary[x.i]).filter(x => x).map(i =>
                     <Grid.Item key={i.documentId} col={1} m={1}>
