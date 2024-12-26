@@ -30,10 +30,13 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
   const [currentFieldSettings, setCurrentFieldSettings] = useState<OrderFieldConfiguration | undefined>(undefined);
 
   useEffect(() => {
-    const collectionType = collectionTypes?.find((collectionType) => collectionType.uid === contentTypeUid);
     setChosenMediaField(localConfig?.chosenMediaField);
     setChosenTitleField(localConfig?.chosenTitleField);
     setChosenSubtitleField(localConfig?.chosenSubtitleField);
+  }, [localConfig]);
+
+  useEffect(() => {
+    const collectionType = collectionTypes?.find((collectionType) => collectionType.uid === contentTypeUid);
     setCurrentCollectionType(collectionType);
 
     if (collectionType) {
@@ -66,7 +69,7 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
       setCurrentAttribute(currentAttr);
       setCurrentFieldSettings((currentAttr as any)?.options.group as OrderFieldConfiguration);
     }
-  }, [contentTypeUid, groupField, localConfig, collectionTypes]);
+  }, [contentTypeUid, groupField, collectionTypes]);
 
   return {
     mediaAttributeNames,
