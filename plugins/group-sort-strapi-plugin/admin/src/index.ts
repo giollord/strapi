@@ -4,7 +4,7 @@ import { PluginIcon, OrderIcon } from './components/PluginIcon';
 import { Schema } from '@strapi/strapi';
 import { StrapiApp } from '@strapi/strapi/admin';
 import * as yup from 'yup';
-import { getTranslation } from './hooks/useTranslation';
+import { getTrad } from './hooks/useTranslation';
 
 const ORDERABLE_1D_FIELDS = [
   'number',
@@ -39,7 +39,7 @@ const GROUPABLE_FIELDS = [
   'boolean',
   'json',
   'media',
-  'relation',
+  'relation',  
   //'component',
   //'dynamiczone',
   //'blocks',
@@ -61,7 +61,7 @@ export default {
       to: `plugins/${PLUGIN_ID}`,
       icon: PluginIcon,
       intlLabel: {
-        id: getTranslation('plugin.name'),
+        id: getTrad('plugin.name'),
         defaultMessage: PLUGIN_ID,
       },
       // @ts-ignore
@@ -74,7 +74,7 @@ export default {
     
     // app.addSettingsLink('global', {
     //   intlLabel: {
-    //     id: getTranslation('plugin.name'),
+    //     id: getTrad('plugin.name'),
     //     defaultMessage: 'Internationalization',
     //   },
     //   id: 'sorting',
@@ -89,11 +89,11 @@ export default {
       type: 'integer',
       pluginId: PLUGIN_ID,
       intlLabel: {
-        id: getTranslation('order.label'),
+        id: getTrad('order.label'),
         defaultMessage: 'Order',
       },
       intlDescription: {
-        id: getTranslation('order.description'),
+        id: getTrad('order.description'),
         defaultMessage: 'Order within the group',
       },
       icon: OrderIcon,
@@ -110,11 +110,11 @@ export default {
       type: 'json',
       pluginId: PLUGIN_ID,
       intlLabel: {
-        id: getTranslation('order-2d.label'),
+        id: getTrad('order-2d.label'),
         defaultMessage: 'Order 2D',
       },
       intlDescription: {
-        id: getTranslation('order-2d.description'),
+        id: getTrad('order-2d.description'),
         defaultMessage: 'Position on 2D grid within the group',
       },
       icon: OrderIcon,
@@ -184,7 +184,7 @@ export default {
                 value: '',
                 metadatas: {
                   intlLabel: {
-                    id: getTranslation('pluginOptions.group.noGroup'),
+                    id: getTrad('pluginOptions.group.noGroup'),
                     defaultMessage: '<Self>',
                   },
                   disabled: false,
@@ -203,7 +203,7 @@ export default {
                     value: '',
                     metadatas: {
                       intlLabel: {
-                        id: getTranslation('content-field-editor.group.order2d.direction.value.none'),
+                        id: getTrad('content-field-editor.group.order2d.direction.value.none'),
                         defaultMessage: '<None>',
                       },
                       disabled: false,
@@ -215,7 +215,7 @@ export default {
                     value: 'horizontal',
                     metadatas: {
                       intlLabel: {
-                        id: getTranslation('content-field-editor.group.order2d.direction.value.horizontal'),
+                        id: getTrad('content-field-editor.group.order2d.direction.value.horizontal'),
                         defaultMessage: 'Horizontal',
                       },
                       disabled: false,
@@ -227,7 +227,7 @@ export default {
                     value: 'vertical',
                     metadatas: {
                       intlLabel: {
-                        id: getTranslation('content-field-editor.group.order2d.direction.value.vertical'),
+                        id: getTrad('content-field-editor.group.order2d.direction.value.vertical'),
                         defaultMessage: 'Vertical',
                       },
                       disabled: false,
@@ -236,11 +236,11 @@ export default {
                   },
                 ],
                 intlLabel: {
-                  id: getTranslation('content-field-editor.group.order2d.direction.label'),
+                  id: getTrad('content-field-editor.group.order2d.direction.label'),
                   defaultMessage: 'Order 2D direction',
                 },
                 description: {
-                  id: getTranslation('content-field-editor.group.order2d.direction.description'),
+                  id: getTrad('content-field-editor.group.order2d.direction.description'),
                   defaultMessage: 'Direction of the order 2D',
                 },
               });
@@ -252,11 +252,11 @@ export default {
                 type: 'select',
                 options: availableOptions,
                 intlLabel: {
-                  id: getTranslation('content-field-editor.group.label'),
+                  id: getTrad('content-field-editor.group.label'),
                   defaultMessage: 'Grouping field',
                 },
                 description: {
-                  id: getTranslation('content-field-editor.group.description'),
+                  id: getTrad('content-field-editor.group.description'),
                   defaultMessage: 'Field which will be used to group entries in "Group and Arrange" view',
                 },
               },
@@ -264,11 +264,11 @@ export default {
                 name: 'options.group.columnsNumber',
                 type: 'number',
                 intlLabel: {
-                  id: getTranslation('content-field-editor.layout-columns.label'),
+                  id: getTrad('content-field-editor.layout-columns.label'),
                   defaultMessage: 'Columns',
                 },
                 description: {
-                  id: getTranslation('content-field-editor.layout-columns.description'),
+                  id: getTrad('content-field-editor.layout-columns.description'),
                   defaultMessage: 'Number of columns in \"Sort\" view',
                 },
               },

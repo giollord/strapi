@@ -5,6 +5,7 @@ interface StyledProps {
   className?: string;
 }
 
+// Hook that adds styles for react-grid-layout, styles taken from official repo
 const withReactGridStyles = <P extends object>(Component: React.ComponentType<P>) => {
   const StyledComponent: React.FC<P & StyledProps> = ({ className, ...props }) => (
     <Component {...(props as P)} className={className} />

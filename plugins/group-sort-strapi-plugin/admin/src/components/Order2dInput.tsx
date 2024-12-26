@@ -1,6 +1,9 @@
-import { Field, Flex, JSONInput, NumberInput } from '@strapi/design-system';
+import { Field, Flex, JSONInput } from '@strapi/design-system';
 import { forwardRef } from 'react';
 
+/**
+  * Order2dInput component, used in Content Manager to display JSON input for 2d order field
+  */
 const Order2dInput = forwardRef<HTMLInputElement, any>((props, ref) => {
   const { attribute, hint, disabled = false, labelAction, label, name, required = false, onChange, value, error, placeholder } = props;
 

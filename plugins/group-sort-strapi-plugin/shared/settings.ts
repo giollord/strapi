@@ -1,9 +1,20 @@
+/**
+ * Global plugin settings, not used at the moment
+ */
 export interface Settings {
   horisontalDivisions: number;
-
-  // TODO: Configure horisontal/vertical divisions in content type itself
 }
 
+/**
+ * User settings, stored in localStorage, contains configurations per content type
+ */
+export interface LocalSettings {
+  configs: Record<string, LocalConfig>;
+}
+
+/**
+ * User settings, stored in localStorage for specific content type
+ */
 export interface LocalConfig {
   chosenMediaField: string;
   chosenTitleField: string;
@@ -11,10 +22,9 @@ export interface LocalConfig {
   rowHeight: number;
 }
 
-export interface LocalSettings {
-  configs: Record<string, LocalConfig>;
-}
-
+/**
+ * Order content field configuration
+ */
 export interface OrderFieldConfiguration {
   groupField: string;
   columnsNumber: number;

@@ -15,6 +15,7 @@ import { Check } from '@strapi/icons';
 import { PLUGIN_ID } from '../../../shared/constants';
 import { useIntl } from 'react-intl';
 
+// TODO: unused at the moment
 export const SettingsPage = () => {
   const { formatMessage } = useTranslation();
   const { formatMessage: formatMessageIntl } = useIntl();

@@ -3,6 +3,11 @@ import { useFetchClient } from '@strapi/strapi/admin';
 import { UseQueryResult, useQuery } from 'react-query';
 import { PLUGIN_ID } from '../../../shared/constants';
 
+/**
+ * Fetches all collection types from the Strapi API
+ * @param dependencies - An array of dependencies that will trigger a refetch when changed
+ * @returns The collection types
+ */
 const useCollectionTypes = (dependencies: any[] = []) => {
   const fetchClient = useFetchClient();
 

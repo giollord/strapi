@@ -11,6 +11,11 @@ export interface UseLocalConfigProps {
     defaultConfig?: LocalConfig;
 }
 
+/**
+ * Hook to manage local configuration settings
+ * @param props - The parameters to manage the local configuration settings, including the content type UID, group field, group name, local settings, set local settings func and default configuration
+ * @returns The local configuration settings and a function to set the local configuration settings
+ */
 const useLocalConfig = (props: UseLocalConfigProps): [LocalConfig, (newConfig: LocalConfig) => void] => {
   const { contentTypeUid, groupField, groupName, localSettings, setLocalSettings } = props;
   let { defaultConfig } = props;

@@ -1,8 +1,6 @@
 import { Field, Grid, NumberInput, SingleSelect, SingleSelectOption } from '@strapi/design-system';
 import React, { ReactNode, useContext } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
-import useLocalConfig from '../..//hooks/useLocalConfig';
-import { Struct } from '@strapi/strapi';
 import { GroupAndArrangeContext } from '../GroupAndArrangeContextProvider';
 
 const GridItem = ({ children }: { children: React.ReactNode }) => (
@@ -54,9 +52,12 @@ const SelectField = (props: SelectFieldProps) => {
     </Field.Root>);
 }
 
+/**
+ * UserSettings component, used in ArrangePage to display user settings for the plugin: chosen media and title fields, row height for 2d order
+ */
 export const UserSettings = () => {
   const { formatMessage } = useTranslation();
-  const { chosenMediaField, chosenTitleField, mediaAttributeNames, titleAttributeNames, localConfig, setLocalConfig, orderType } = useContext(GroupAndArrangeContext);
+  const { chosenMediaField, chosenTitleField, mediaAttributeNames, titleAttributeNames, localConfig, currentAttribute, setLocalConfig } = useContext(GroupAndArrangeContext);
 
   const emptyItemContent = formatMessage({
     id: 'arrange.empty-item',
@@ -140,7 +141,7 @@ export const UserSettings = () => {
           emptyItemContent={emptyItemContent}
         />
       </GridItem>
-      {orderType == '2d' && 
+      {currentAttribute?.isOrder2d && 
         <GridItem>
           <Field.Root
             hint={formatMessage({
