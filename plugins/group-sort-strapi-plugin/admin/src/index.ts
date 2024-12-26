@@ -72,17 +72,17 @@ export default {
       },
     });
     
-    // app.addSettingsLink('global', {
-    //   intlLabel: {
-    //     id: getTrad('plugin.name'),
-    //     defaultMessage: 'Internationalization',
-    //   },
-    //   id: 'sorting',
-    //   to: 'group-and-arrange',
-    //   Component: () =>
-    //     import('./pages/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
-    //   permissions: [],
-    // });
+    app.addSettingsLink('global', {
+      intlLabel: {
+        id: getTrad('plugin.name'),
+        defaultMessage: 'Internationalization',
+      },
+      id: 'sorting',
+      to: 'group-and-arrange',
+      Component: () =>
+        import('./pages/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
+      permissions: [],
+    });
 
     app.customFields.register({
       name: 'order',

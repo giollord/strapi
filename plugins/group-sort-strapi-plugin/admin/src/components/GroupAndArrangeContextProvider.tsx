@@ -1,5 +1,5 @@
 import { useLocalStorage } from "react-use";
-import { LocalConfig, LocalSettings, OrderFieldConfiguration } from "../../../shared/settings";
+import { LocalConfig, LocalSettings, OrderFieldConfiguration, Settings } from "../../../shared/settings";
 import { LOCAL_SETTINGS_KEY } from "../../../shared/constants";
 import { useParams } from "react-router-dom";
 import { createContext } from "react";
@@ -11,6 +11,7 @@ import { Attribute } from '@strapi/types/dist/schema';
 import { GroupResult, GroupResultMeta } from "../../../shared/contracts";
 import useGroupNames from "../hooks/useGroupNames";
 import { ContentTypeSchema } from "@strapi/types/dist/struct";
+import useSettings from "../hooks/useSettings";
 
 export const GroupAndArrangeContext = createContext<GroupAndArrangeContextValue & GroupAndArrangeContextSetters>(undefined!);
 
@@ -36,6 +37,7 @@ export interface GroupAndArrangeContextValue {
   groupData: GroupResult | null;
   collectionTypes: ContentTypeSchema[] | null;
   groupNames: GroupResultMeta[] | null;
+  globalSettings: Settings | null;
 }
 
 export interface GroupAndArrangeContextSetters {
@@ -55,6 +57,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
   const [localConfig, setLocalConfig] = useLocalConfig({ contentTypeUid, groupField, groupName, localSettings, setLocalSettings });
   const { groupData, isLoading: isLoadingGroupData } = useGroupData({ contentTypeUid, groupField, groupName });
   const { groupNames, isLoading: isFetchingGroupNames } = useGroupNames({ contentTypeUid });
+  const { settings, isLoading: isFetchingSettings } = useSettings();
 
   const { chosenMediaField, chosenTitleField, chosenSubtitleField, mediaAttributeNames, titleAttributeNames, currentAttribute, currentCollectionType, currentFieldSettings } = useAttributeData({
     contentTypeUid,
@@ -64,7 +67,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
   })
 
   const localConfigKey =  contentTypeUid && groupField && groupName ? `${contentTypeUid}/${groupField}/${groupName}` : null;
-  const isLoading = isLoadingCollectionTypes || isLoadingGroupData || isFetchingGroupNames;
+  const isLoading = isLoadingCollectionTypes || isLoadingGroupData || isFetchingGroupNames || isFetchingSettings;
 
   const contextValue: GroupAndArrangeContextValue & GroupAndArrangeContextSetters = {
     isLoading,
@@ -85,6 +88,7 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
     groupData: groupData || null,
     collectionTypes: collectionTypes || null,
     groupNames: groupNames || null,
+    globalSettings: settings || null,
     setLocalSettings,
     setLocalConfig,
   };

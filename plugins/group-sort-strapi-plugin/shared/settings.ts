@@ -2,7 +2,7 @@
  * Global plugin settings, not used at the moment
  */
 export interface Settings {
-  horisontalDivisions: number;
+  alwaysShowFieldTypeInList: boolean;
 }
 
 /**

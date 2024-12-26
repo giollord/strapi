@@ -54,7 +54,8 @@ const LeftMenu = () => {
     contentTypeUid,
     groupName,
     groupData,
-    isLoading} = useContext(GroupAndArrangeContext);
+    isLoading,
+    globalSettings} = useContext(GroupAndArrangeContext);
   
   // indicates whether the collection type is open. Can be false on the main page of plugin
   const isCollectionTypeOpen = Boolean(contentTypeUid);
@@ -96,7 +97,7 @@ const LeftMenu = () => {
       search: null,
       kind: null,
       placeOnTop: isUndefined,
-      title: nameOccurencesCount[group.groupName] > 1
+      title: globalSettings?.alwaysShowFieldTypeInList || nameOccurencesCount[group.groupName] > 1
         ? `${name} (${group.orderField})`
         : name,
       to: `/plugins/${PLUGIN_ID}/${contentTypeUid}/${group.orderField}/${group.groupName}`,

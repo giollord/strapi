@@ -5,12 +5,13 @@ import { PLUGIN_ID } from "../../../shared/constants";
 
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getSettings(ctx: Context): Promise<Settings> {
-    const res = await strapi.store!({ type: 'plugin', name: PLUGIN_ID, key: 'settings' }).get({});
+    const res = await strapi.store.get({ type: 'plugin', name: PLUGIN_ID, key: 'settings' });
     return res as Settings | null;
   },
-  async updateSettings(ctx: Context): Promise<void> {
+  async updateSettings(ctx: Context): Promise<Settings> {
     const value = ctx.request.body;
-    return strapi.store!({ type: 'plugin', name: 'upload', key: 'settings' }).set({ value });
+    await strapi.store.set({ type: 'plugin', name: PLUGIN_ID, key: 'settings', value });
+    return await this.getSettings(ctx);
   }
 });
 export default service;

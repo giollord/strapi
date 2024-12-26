@@ -6,7 +6,7 @@ import { get, set } from 'lodash';
 const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
   // bootstrap phase
   const defaultConfig: Settings = {
-    horisontalDivisions: 12,
+    alwaysShowFieldTypeInList: true,
   };
 
   const configurator = strapi.store!({ type: 'plugin', name: PLUGIN_ID, key: 'settings' });
