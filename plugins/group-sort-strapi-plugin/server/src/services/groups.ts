@@ -2,9 +2,26 @@ import type { Core } from '@strapi/strapi';
 import { get } from 'lodash';
 import { GroupResult, GroupResultItem, GroupResultMeta } from '../../../shared/contracts';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
-import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
+import { GROUPABLE_FIELDS_REQUIRING_POPULATE, PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
 
 const THROW_IF_GROUP_NAME_FIELD_NOT_FOUND = false;
+
+
+function extractValue (arg: any): any {
+  if (Array.isArray(arg)) {
+    arg = arg[0];
+  }
+
+  if (typeof arg === 'number' || typeof arg === 'string' || typeof arg === 'boolean' || arg === null || arg === undefined) {
+    return arg;
+  }
+
+  if (typeof arg === 'object' && arg !== null) {
+    return arg.name || arg.title || arg.id || arg.documentId || null;
+  }
+
+  return null;
+};
 
 const getGroupConfigs = (strapi, uid) => {
   const contentType = strapi.contentTypes[uid];
@@ -58,16 +75,16 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     }
 
     const attributeNames = Object.keys(strapi.contentTypes[uid].attributes);
-    const mediaFields = attributeNames
+    const groupableFields = attributeNames
       .map((key) => {
         const attr = strapi.contentTypes[uid].attributes[key];
-        if (attr.type !== 'media') return null;
+        if (!GROUPABLE_FIELDS_REQUIRING_POPULATE.includes(attr.type)) return null;
 
         return key;
       })
       .filter((v) => v);
 
-    const entities = await strapi.documents(uid).findMany({ populate: mediaFields });
+    const entities = await strapi.documents(uid).findMany({ populate: groupableFields });
     const group: GroupResult = {
       groupName: groupConfig.groupNameField,
       orderField: groupConfig.orderField,
@@ -76,7 +93,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     };
 
     for (const entity of entities) {
-      const entityGroupName = get(entity, groupConfig.groupNameField) as string;
+      const entityGroupName = extractValue(get(entity, groupConfig.groupNameField)) as string;
       if (groupName !== entityGroupName) continue;
 
       group.items.push(entity);
@@ -88,15 +105,26 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getItemsWithGroups(ctx): Promise<GroupResultItem[]> {
     const { uid } = ctx.params;
 
+    const attributeNames = Object.keys(strapi.contentTypes[uid].attributes);
+    const groupableFields = attributeNames
+      .map((key) => {
+        const attr = strapi.contentTypes[uid].attributes[key];
+        if (!GROUPABLE_FIELDS_REQUIRING_POPULATE.includes(attr.type)) return null;
+
+        return key;
+      })
+      .filter((v) => v);
+
     const groupConfigs = getGroupConfigs(strapi, uid);
-    const entities = await strapi.documents(uid).findMany({});
+    const entities = await strapi.documents(uid).findMany({populate: groupableFields});
     const result: GroupResultItem[] = [];
 
     for (const entity of entities) {
+      
       result.push({
         item: entity,
         groups: groupConfigs.map((groupConfig) => ({
-          groupName: (get(entity, groupConfig.groupNameField) as string) || UNDEFINED_GROUP_NAME,
+          groupName: extractValue(get(entity, groupConfig.groupNameField)) || UNDEFINED_GROUP_NAME,
           orderField: groupConfig.orderField,
           order2dDirection: groupConfig.order2dDirection,
         })),
