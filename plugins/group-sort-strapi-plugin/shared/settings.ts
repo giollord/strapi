@@ -18,4 +18,5 @@ export interface LocalSettings {
 export interface OrderFieldConfiguration {
   groupField: string;
   columnsNumber: number;
+  order2dDirection: 'horizontal' | 'vertical' | null;
 }

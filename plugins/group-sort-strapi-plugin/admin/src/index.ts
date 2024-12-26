@@ -6,14 +6,19 @@ import { StrapiApp } from '@strapi/strapi/admin';
 import * as yup from 'yup';
 import { getTranslation } from './hooks/useTranslation';
 
-const ORDERABLE_FIELDS = [
+const ORDERABLE_1D_FIELDS = [
   'number',
   'integer',
   'biginteger',
   'float',
   'decimal',
+]
+
+const ORDERABLE_2D_FIELDS = [
   'json',
 ];
+
+const ORDERABLE_FIELDS = ORDERABLE_1D_FIELDS.concat(ORDERABLE_2D_FIELDS);
 
 const GROUPABLE_FIELDS = [
   'string',
@@ -46,6 +51,7 @@ const fieldValidator: () => Record<string, yup.AnySchema> =  () => ({
       .string()
       .not([UNDEFINED_GROUP_NAME, 'null']),
     columnsNumber: yup.number().required().integer().min(1).max(100),
+    order2dDirection: yup.string().nullable(),
   }),
 });
 
@@ -66,17 +72,17 @@ export default {
       },
     });
     
-    app.addSettingsLink('global', {
-      intlLabel: {
-        id: getTranslation('plugin.name'),
-        defaultMessage: 'Internationalization',
-      },
-      id: 'sorting',
-      to: 'group-and-arrange',
-      Component: () =>
-        import('./pages/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
-      permissions: [],
-    });
+    // app.addSettingsLink('global', {
+    //   intlLabel: {
+    //     id: getTranslation('plugin.name'),
+    //     defaultMessage: 'Internationalization',
+    //   },
+    //   id: 'sorting',
+    //   to: 'group-and-arrange',
+    //   Component: () =>
+    //     import('./pages/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
+    //   permissions: [],
+    // });
 
     app.customFields.register({
       name: 'order',
@@ -95,7 +101,7 @@ export default {
         Input: () => import('./components/OrderInput')
       },
       options: {
-        validator: fieldValidator
+        validator: fieldValidator,
       }
     });
     
@@ -157,6 +163,8 @@ export default {
               return [];
             }
 
+            const isOrder2d = ORDERABLE_2D_FIELDS.includes(type);
+
             const availableOptions = contentTypeSchema.schema.attributes
               .filter((attr: any) => GROUPABLE_FIELDS.includes(attr.type))
               .map((attr: any) => ({
@@ -184,9 +192,62 @@ export default {
                 },
               });
 
+            const moreFields: any[] = [];
+            if(isOrder2d) {
+              moreFields.push({
+                name: 'options.group.order2dDirection',
+                type: 'select',
+                options: [
+                  {
+                    key: '',
+                    value: '',
+                    metadatas: {
+                      intlLabel: {
+                        id: getTranslation('content-field-editor.group.order2d.direction.value.none'),
+                        defaultMessage: '<None>',
+                      },
+                      disabled: false,
+                      hidden: false,
+                    },
+                  },
+                  {
+                    key: 'horizontal',
+                    value: 'horizontal',
+                    metadatas: {
+                      intlLabel: {
+                        id: getTranslation('content-field-editor.group.order2d.direction.value.horizontal'),
+                        defaultMessage: 'Horizontal',
+                      },
+                      disabled: false,
+                      hidden: false,
+                    },
+                  },
+                  {
+                    key: 'vertical',
+                    value: 'vertical',
+                    metadatas: {
+                      intlLabel: {
+                        id: getTranslation('content-field-editor.group.order2d.direction.value.vertical'),
+                        defaultMessage: 'Vertical',
+                      },
+                      disabled: false,
+                      hidden: false,
+                    },
+                  },
+                ],
+                intlLabel: {
+                  id: getTranslation('content-field-editor.group.order2d.direction.label'),
+                  defaultMessage: 'Order 2D direction',
+                },
+                description: {
+                  id: getTranslation('content-field-editor.group.order2d.direction.description'),
+                  defaultMessage: 'Direction of the order 2D',
+                },
+              });
+            }
+
             return [
               {
-                //name: getTranslation('pluginOptions.group.groupNameField'),
                 name: 'options.group.groupNameField',
                 type: 'select',
                 options: availableOptions,
@@ -211,6 +272,7 @@ export default {
                   defaultMessage: 'Number of columns in \"Sort\" view',
                 },
               },
+              ...moreFields
             ];
           }
         },

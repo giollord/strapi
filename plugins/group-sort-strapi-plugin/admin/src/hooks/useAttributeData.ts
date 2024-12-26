@@ -8,24 +8,25 @@ export interface UseAttributeNamesParams {
   contentTypeUid: string | undefined,
   groupField?: string | undefined,
   localConfig: LocalConfig,
-  collectionTypes: Struct.ContentTypeSchema[] | undefined,
-  setOrderType: (orderType: 'none' | '1d' | '2d') => void;
+  collectionTypes: Struct.ContentTypeSchema[] | undefined
 }
 
 export const useAttributeData = (props: UseAttributeNamesParams) => {
-  const { contentTypeUid, groupField, localConfig, collectionTypes, setOrderType } = props;
+  const { contentTypeUid, groupField, localConfig, collectionTypes } = props;
 
   const [chosenMediaField, setChosenMediaField] = useState<string | undefined>(undefined);
   const [chosenTitleField, setChosenTitleField] = useState<string | undefined>(undefined);
   const [mediaAttributeNames, setMediaAttributeNames] = useState<string[]>([]);
   const [titleAttributeNames, setTitleAttributeNames] = useState<string[]>([]);
   const [currentAttribute, setCurrentAttribute] = useState<(Attribute.AnyAttribute & { isOrder: boolean, isOrder2d: boolean }) | null>(null);
+  const [currentCollectionType, setCurrentCollectionType] = useState<Struct.ContentTypeSchema | undefined>(undefined);
   const [currentFieldSettings, setCurrentFieldSettings] = useState<OrderFieldConfiguration | undefined>(undefined);
 
   useEffect(() => {
     const collectionType = collectionTypes?.find((collectionType) => collectionType.uid === contentTypeUid);
     setChosenMediaField(localConfig?.chosenMediaField);
     setChosenTitleField(localConfig?.chosenTitleField);
+    setCurrentCollectionType(collectionType);
 
     if (collectionType) {
       const mediaNames = Object.keys(collectionType.attributes || {}).filter((attributeName) => {
@@ -56,7 +57,6 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
 
       setCurrentAttribute(currentAttr);
       setCurrentFieldSettings((currentAttr as any)?.options.group as OrderFieldConfiguration);
-      setOrderType(currentAttr?.isOrder ? '1d' : currentAttr?.isOrder2d ? '2d' : 'none');
     }
   }, [contentTypeUid, groupField, localConfig, collectionTypes]);
 
@@ -66,6 +66,7 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
     chosenMediaField,
     chosenTitleField,
     currentAttribute,
+    currentCollectionType,
     currentFieldSettings
   };
 };

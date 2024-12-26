@@ -1,6 +1,6 @@
 import { UseQueryResult, useQuery } from 'react-query';
 import { PLUGIN_ID } from '../../../shared/constants';
-import {  GroupResultName } from '../../../shared/contracts';
+import {  GroupResultMeta } from '../../../shared/contracts';
 import { useFetchClient } from '@strapi/strapi/admin';
 
 export interface UseGroupNamesParams {
@@ -16,10 +16,10 @@ const useGroupNames = (props: UseGroupNamesParams) => {
     queryKey: [PLUGIN_ID, 'groups', contentTypeUid],
     async queryFn() {
       const result = await fetchClient.get(`/${PLUGIN_ID}/group-names/${contentTypeUid}`);
-      return result.data as GroupResultName[];
+      return result.data as GroupResultMeta[];
     },
     enabled: Boolean(contentTypeUid),
-  })as UseQueryResult<GroupResultName[], unknown> & { groupNames: GroupResultName[] | undefined };
+  })as UseQueryResult<GroupResultMeta[], unknown> & { groupNames: GroupResultMeta[] | undefined };
 
   result.groupNames = result.data;
     

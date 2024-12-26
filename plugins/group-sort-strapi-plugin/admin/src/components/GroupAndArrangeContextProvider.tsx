@@ -8,7 +8,7 @@ import useLocalConfig from "../hooks/useLocalConfig";
 import useGroupData from "../hooks/useGroupData";
 import useAttributeData from "../hooks/useAttributeData";
 import { Attribute } from '@strapi/types/dist/schema';
-import { GroupResult, GroupResultName } from "../../../shared/contracts";
+import { GroupResult, GroupResultMeta } from "../../../shared/contracts";
 import useGroupNames from "../hooks/useGroupNames";
 import { ContentTypeSchema } from "@strapi/types/dist/struct";
 
@@ -17,7 +17,6 @@ export const GroupAndArrangeContext = createContext<GroupAndArrangeContextValue 
 export interface GroupAndArrangeContextValue {
   isLoading: boolean;
   localSettings: LocalSettings | null;
-  orderType: 'none' | '1d' | '2d';
   contentTypeUid: string | null;
   groupField: string | null;
   groupName: string | null;
@@ -30,16 +29,16 @@ export interface GroupAndArrangeContextValue {
   currentAttribute: (Attribute.AnyAttribute & {
     isOrder: boolean;
     isOrder2d: boolean;
-}) | null;
+  }) | null;
+  currentCollectionType: ContentTypeSchema | null;
   currentFieldSettings: OrderFieldConfiguration | null;
   groupData: GroupResult | null;
   collectionTypes: ContentTypeSchema[] | null;
-  groupNames: GroupResultName[] | null;
+  groupNames: GroupResultMeta[] | null;
 }
 
 export interface GroupAndArrangeContextSetters {
   setLocalSettings: (newConfig: LocalSettings) => void;
-  setOrderType: (orderType: 'none' | '1d' | '2d') => void;
   setLocalConfig: (config: any) => void;
 }
 
@@ -47,19 +46,17 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
   const [localSettings, setLocalSettings] = useLocalStorage<LocalSettings>(LOCAL_SETTINGS_KEY, {
     configs: {},
   });
-  const [orderType, setOrderType] = useState('none' as 'none' | '1d' | '2d');
   const { uid: contentTypeUid, groupField, groupName } = useParams<{ uid: string, groupField: string, groupName: string }>();
   const { collectionTypes, isLoading: isLoadingCollectionTypes } = useCollectionTypes();
   const [localConfig, setLocalConfig] = useLocalConfig({ contentTypeUid, groupField, groupName, localSettings, setLocalSettings });
   const { groupData, isLoading: isLoadingGroupData } = useGroupData({ contentTypeUid, groupField, groupName });
   const { groupNames, isLoading: isFetchingGroupNames } = useGroupNames({ contentTypeUid });
 
-  const { chosenMediaField, chosenTitleField, mediaAttributeNames, titleAttributeNames, currentAttribute, currentFieldSettings } = useAttributeData({
+  const { chosenMediaField, chosenTitleField, mediaAttributeNames, titleAttributeNames, currentAttribute, currentCollectionType, currentFieldSettings } = useAttributeData({
     contentTypeUid,
     groupField,
     localConfig,
-    collectionTypes,
-    setOrderType
+    collectionTypes
   })
 
   const localConfigKey =  contentTypeUid && groupField && groupName ? `${contentTypeUid}/${groupField}/${groupName}` : null;
@@ -68,7 +65,6 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
   const contextValue: GroupAndArrangeContextValue & GroupAndArrangeContextSetters = {
     isLoading,
     localSettings: localSettings || null,
-    orderType,
     contentTypeUid: contentTypeUid || null,
     groupField: groupField || null,
     groupName: groupName || null,
@@ -79,12 +75,12 @@ export const GroupAndArrangeContextProvider = ({ children }: { children: React.R
     mediaAttributeNames,
     titleAttributeNames,
     currentAttribute: currentAttribute || null,
+    currentCollectionType: currentCollectionType || null,
     currentFieldSettings: currentFieldSettings || null,
     groupData: groupData || null,
     collectionTypes: collectionTypes || null,
     groupNames: groupNames || null,
     setLocalSettings,
-    setOrderType,
     setLocalConfig,
   };
 

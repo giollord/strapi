@@ -1,7 +1,7 @@
 import type { Core } from '@strapi/strapi';
 import { get } from 'lodash';
 import * as qs from 'qs';
-import { GroupResult, GroupResultItem, GroupResultName } from '../../../shared/contracts';
+import { GroupResult, GroupResultItem, GroupResultMeta } from '../../../shared/contracts';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
 import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
 
@@ -13,7 +13,7 @@ const getGroupConfigs = (strapi, uid) => {
     throw new ContentTypeNotFoundError(uid);
   }
 
-  const groupConfigs: { orderField: string, groupNameField: string }[] = [];
+  const groupConfigs: { orderField: string, groupNameField: string, order2dDirection: 'horizontal' | 'vertical' | null }[] = [];
 
   for(const key in contentType.attributes) {
     const attr = contentType.attributes[key];
@@ -34,6 +34,7 @@ const getGroupConfigs = (strapi, uid) => {
     groupConfigs.push({
       orderField: key,
       groupNameField,
+      order2dDirection: get(attr, ['options', 'group', 'order2dDirection']) as 'horizontal' | 'vertical' | null,
     });
   }
 
@@ -63,6 +64,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     const group: GroupResult = {
       groupName: groupConfig.groupNameField,
       orderField: groupConfig.orderField,
+      order2dDirection: groupConfig.order2dDirection,
       items: [],
     };
 
@@ -89,6 +91,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
         groups: groupConfigs.map((groupConfig) => ({
           groupName: get(entity, groupConfig.groupNameField) as string || UNDEFINED_GROUP_NAME,
           orderField: groupConfig.orderField,
+          order2dDirection: groupConfig.order2dDirection,
         })),
       });
     }
@@ -107,6 +110,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
           groupsDict[key] = {
             groupName: group.groupName,
             orderField: group.orderField,
+            order2dDirection: group.order2dDirection,
             items: [],
           };
         }
@@ -118,9 +122,9 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     return Object.values(groupsDict);
   },
 
-  async getGroupNames(ctx): Promise<GroupResultName[]> {
+  async getGroupNames(ctx): Promise<GroupResultMeta[]> {
     const itemsWithGroups = await this.getItemsWithGroups(ctx);
-    const groupsDict: Record<string, GroupResultName> = {};
+    const groupsDict: Record<string, GroupResultMeta> = {};
 
     for(const item of itemsWithGroups) {
       for(const group of item.groups) {

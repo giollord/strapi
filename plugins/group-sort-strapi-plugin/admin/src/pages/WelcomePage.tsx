@@ -9,29 +9,28 @@ import { Layouts, Page } from '@strapi/strapi/admin';
 import { LeftMenu } from '../components/LeftMenu';
 import { GridFour } from '@strapi/icons';
 
+const MainBox = styled.div`
+  margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};
+  padding: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
+  background-color: ${({ theme }) => (theme as StrapiTheme).colors.neutral0};
+`;
+const WordWrap = styled<TypographyComponent>(Typography)`
+  word-break: break-word;
+  p, ol {
+    margin-bottom: ${({ theme }) => (theme as StrapiTheme).spaces[2]};
+  }
+  li {
+    list-style-type: number;
+  }
+`;
+const GridFourCustom = styled(GridFour)`
+  margin-right: ${({ theme }) => (theme as StrapiTheme).spaces[2]};
+  width: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
+  height: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
+`;
 
 const WelcomePage = () => {
   const { formatMessage } = useTranslation();
-
-  const MainBox = styled.div`
-    margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};
-    padding: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
-    background-color: ${({ theme }) => (theme as StrapiTheme).colors.neutral0};
-  `;
-  const WordWrap = styled<TypographyComponent>(Typography)`
-    word-break: break-word;
-    p, ol {
-      margin-bottom: ${({ theme }) => (theme as StrapiTheme).spaces[2]};
-    }
-    li {
-      list-style-type: number;
-    }
-  `;
-  const GridFourCustom = styled(GridFour)`
-    margin-right: ${({ theme }) => (theme as StrapiTheme).spaces[2]};
-    width: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
-    height: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
-  `;
 
   return (
     <Layouts.Root sideNav={<LeftMenu />}>
