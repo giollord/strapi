@@ -1,7 +1,7 @@
 import { Context } from 'koa';
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
 import { PLUGIN_ID } from '../../../shared/constants';
-import { GroupResult, GroupResultItem, GroupResultName } from '../../../shared/contracts';
+import { GroupResult, GroupResultItem, GroupResultMeta } from '../../../shared/contracts';
 
 const service = () => strapi.plugin(PLUGIN_ID).service('groups');
 
@@ -28,7 +28,7 @@ const groups = {
     execute(ctx, service().getGroupsWithItems(ctx) as Promise<GroupResult[]>);
   },
   async getGroupNames(ctx: Context) {
-    execute(ctx, service().getGroupNames(ctx) as Promise<GroupResultName[]>);
+    execute(ctx, service().getGroupNames(ctx) as Promise<GroupResultMeta[]>);
   }
 };
 

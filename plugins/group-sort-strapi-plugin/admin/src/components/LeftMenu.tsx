@@ -18,7 +18,7 @@ import {useFetchClient} from '@strapi/admin/strapi-admin';
 import { Struct } from '@strapi/types';
 import { ArrowLeft } from '@strapi/icons';
 import { getTranslation, useTranslation } from '../hooks/useTranslation';
-import { GroupResult, GroupResultName } from '../../../shared/contracts';
+import { GroupResult, GroupResultMeta } from '../../../shared/contracts';
 import { PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
 import { useQuery } from 'react-query';
 import { Rec } from '@strapi/database/dist/query/helpers';
