@@ -109,35 +109,35 @@ const ArrangePage = () => {
         groupData?.items
           .reduce((acc: {order: GridLayout.Layout | null, documentId: string}[], item) => {
             const order = item[groupField];
+            if (typeof order !== 'object' && order !== null && order !== undefined) {
+              return null;
+            }
             acc.push({ order: order || null, documentId: item.documentId });
             return acc;
           }, [])
-          .map(x => {
+          ?.filter((x: any) => x)
+          .map((x: { order: GridLayout.Layout | null; documentId: string; }) => {
             // attach documetId since it is not part of the order object
             return { order: x.order && {...x.order, i: x.documentId} as GridLayout.Layout, documentId: x.documentId }
           }) || [];
       
-      const resultingSortables = sortables.filter(x => x.order).map(x => x.order as GridLayout.Layout);
-      const idsMissingOrder = sortables.filter(x => !x.order).map(x => x.documentId);
-      if(idsMissingOrder.length > 0) {
-        const lastPosition = {x:0, y:0};
-        sortables.forEach(i => {
-          if(i.order)
-          {
-            lastPosition.x = Math.max(lastPosition.x, i.order.x + i.order.w);
-            lastPosition.y = Math.max(lastPosition.y, i.order.y + i.order.h);
-          }
+      const resultingSortables = sortables?.filter(x => x.order && x.order.x !== undefined && x.order.y !== undefined && x.order.w !== undefined && x.order.h !== undefined).map(x => x.order as GridLayout.Layout);
+      // sortables except resultingSortables
+      const idsMissingOrder = sortables?.filter(x => !resultingSortables.some(y => y.i === x.documentId)).map(x => x.documentId);
+      if(idsMissingOrder?.length > 0) {
+        let lastPositionY = 0;
+        resultingSortables.forEach(i => {
+          lastPositionY = Math.max(lastPositionY, i.y + i.h);
         });
         for(let i = 0; i < idsMissingOrder.length; i++)
         {
           const id = idsMissingOrder[i];
-          const x = (i + lastPosition.x) % currentFieldSettings.columnsNumber;
-          const y = Math.floor((i + lastPosition.x) / currentFieldSettings.columnsNumber);
+          const y = Math.floor(i / currentFieldSettings.columnsNumber);
 
           const layout: GridLayout.Layout = {
             i: id,
-            x: x,
-            y: lastPosition.y + y,
+            x: 0,
+            y: lastPositionY + y,
             w: 1,
             h: 1
           }
@@ -192,7 +192,7 @@ const ArrangePage = () => {
       }
       setIsModified(true);
     }
-    setLayout2d(layout);
+    setLayout2d(layout.filter(x => x && x.i && x.x !== undefined));
   }
 
   async function handleSave(): Promise<void> {
@@ -208,12 +208,12 @@ const ArrangePage = () => {
     }
     if (currentAttribute?.isOrder2d) {
       for (const item of layout2d) {
-        const stringified = JSON.stringify({
+        const stringified = {
           x: item.x,
           y: item.y,
           w: item.w,
           h: item.h
-        }, null, 2);
+        };
         await fetchClient.put(`/content-manager/collection-types/${currentCollectionType?.uid}/${item.i}`, {
           [groupField!]: stringified
         });
