@@ -1,3 +1,5 @@
+import { GridDirection } from "./types";
+
 /**
  * Global plugin settings, not used at the moment
  */
@@ -28,5 +30,5 @@ export interface LocalConfig {
 export interface OrderFieldConfiguration {
   groupField: string;
   columnsNumber: number;
-  order2dDirection: 'horizontal' | 'vertical' | null;
+  order2dDirection: GridDirection;
 }

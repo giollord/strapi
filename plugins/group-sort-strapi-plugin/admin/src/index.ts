@@ -59,7 +59,7 @@ export default {
       },
       icon: OrderIcon,
       components: {
-        Input: () => import('./components/OrderInput')
+        Input: () => import('./components/contentManager/OrderInput')
       },
       options: {
         validator: fieldValidator,
@@ -80,7 +80,7 @@ export default {
       },
       icon: OrderIcon,
       components: {
-        Input: () => import('./components/Order2dInput')
+        Input: () => import('./components/contentManager/Order2dInput')
       },
       options: {
         validator: fieldValidator

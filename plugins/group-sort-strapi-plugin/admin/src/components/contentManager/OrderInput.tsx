@@ -1,6 +1,6 @@
 import { Field, Flex, NumberInput } from '@strapi/design-system';
 import { forwardRef } from 'react';
-import { useTranslation } from '../hooks/useTranslation';
+import { useTranslation } from '../../hooks/useTranslation';
 
 /**
   * OrderInput component, used in Content Manager to display number input for 1d order field

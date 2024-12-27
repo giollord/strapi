@@ -1,10 +1,12 @@
+import { GridDirection } from "./types"
+
 /**
  * Group metadata
  */
 export interface GroupResultMeta {
   groupName: string,
   orderField: string,
-  order2dDirection: 'horizontal' | 'vertical' | null
+  order2dDirection: GridDirection
 }
 
 /**
