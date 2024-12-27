@@ -4,7 +4,8 @@ import {  GroupResultMeta } from '../../../shared/contracts';
 import { useFetchClient } from '@strapi/strapi/admin';
 
 export interface UseGroupNamesParams {
-    contentTypeUid: string | undefined;
+  contentTypeUid: string | undefined;
+  updateCounter: number;
 }
 
 /**
@@ -13,12 +14,12 @@ export interface UseGroupNamesParams {
  * @returns The group names
  */
 const useGroupNames = (props: UseGroupNamesParams) => {
-  const { contentTypeUid } = props;
+  const { contentTypeUid, updateCounter } = props;
   
   const fetchClient = useFetchClient();
   
   const result =  useQuery({
-    queryKey: [PLUGIN_ID, 'groups', contentTypeUid],
+    queryKey: [PLUGIN_ID, 'groups', contentTypeUid, updateCounter],
     async queryFn() {
       const result = await fetchClient.get(`/${PLUGIN_ID}/group-names/${contentTypeUid}`);
       return result.data as GroupResultMeta[];
@@ -30,15 +31,5 @@ const useGroupNames = (props: UseGroupNamesParams) => {
     
   return result;
 };
-
-function substituteQuery<T>(value: T): { data: T; isLoading: boolean } | null {
-  if (value === undefined || value === null) {
-    return null;
-  }
-  return {
-    data: value,
-    isLoading: false
-  }
-}
 
 export default useGroupNames;

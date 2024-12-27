@@ -2,6 +2,7 @@ import { Field, Grid, NumberInput, SingleSelect, SingleSelectOption } from '@str
 import React, { ReactNode, useContext } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { GroupAndArrangeContext } from '../GroupAndArrangeContextProvider';
+import { GridDirection } from '../../../../shared/types';
 
 const GridItem = ({ children }: { children: React.ReactNode }) => (
   <Grid.Item xs={12} s={6} m={4}>{children}</Grid.Item>
@@ -192,7 +193,7 @@ export const UserSettings = () => {
                 defaultMessage: 'Choose direction'
               })}
               value={chosenDirection}
-              onChange={x => setChosenDirection((x || null) as 'horizontal' | 'vertical' | null)}
+              onChange={x => setChosenDirection((x || null) as GridDirection)}
             >
               <SingleSelectOption
                 key='horizontal'

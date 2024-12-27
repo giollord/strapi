@@ -8,11 +8,11 @@ import { Settings } from '../../../shared/settings';
  * @param props - The parameters to fetch the group data, including the content type UID, group field, and group name
  * @returns The group data
  */
-const useSettings = () => {
+const useSettings = ({ updateCounter }: { updateCounter: number }) => {
   const fetchClient = useFetchClient();
 
   const result = useQuery({
-    queryKey: [PLUGIN_ID, 'settings'],
+    queryKey: [PLUGIN_ID, 'settings', updateCounter],
     async queryFn() {
       const result = await fetchClient.get(
         `/${PLUGIN_ID}/settings`

@@ -1,6 +1,7 @@
 import type { Core } from '@strapi/strapi';
 import { get } from 'lodash';
 import { GroupResult, GroupResultItem, GroupResultMeta } from '../../../shared/contracts';
+import { GridDirection } from "../../../shared/types";
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
 import { GROUPABLE_FIELDS_REQUIRING_POPULATE, PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
 
@@ -32,7 +33,7 @@ const getGroupConfigs = (strapi, uid) => {
   const groupConfigs: {
     orderField: string;
     groupNameField: string;
-    order2dDirection: 'horizontal' | 'vertical' | null;
+    order2dDirection: GridDirection;
   }[] = [];
 
   for (const key in contentType.attributes) {
@@ -53,7 +54,7 @@ const getGroupConfigs = (strapi, uid) => {
     groupConfigs.push({
       orderField: key,
       groupNameField,
-      order2dDirection: get(attr, ['options', 'group', 'order2dDirection']) as 'horizontal' | 'vertical' | null,
+      order2dDirection: get(attr, ['options', 'group', 'order2dDirection']) as GridDirection,
     });
   }
 

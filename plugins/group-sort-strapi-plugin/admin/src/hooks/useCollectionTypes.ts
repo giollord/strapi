@@ -8,11 +8,11 @@ import { PLUGIN_ID } from '../../../shared/constants';
  * @param dependencies - An array of dependencies that will trigger a refetch when changed
  * @returns The collection types
  */
-const useCollectionTypes = (dependencies: any[] = []) => {
+const useCollectionTypes = ({updateCounter}: {updateCounter: number}) => {
   const fetchClient = useFetchClient();
 
   const result = useQuery({
-    queryKey: [PLUGIN_ID, ...dependencies],
+    queryKey: [PLUGIN_ID, updateCounter],
     async queryFn() {
       const result = await fetchClient.get('/content-manager/content-types');
       const allCollectionTypes = result.data.data as Struct.ContentTypeSchema[];

@@ -7,6 +7,7 @@ export interface UseGroupDataParams {
   contentTypeUid: string | undefined;
   groupField: string | undefined;
   groupName: string | undefined;
+  updateCounter: number;
 }
 
 /**
@@ -15,12 +16,12 @@ export interface UseGroupDataParams {
  * @returns The group data
  */
 const useGroupData = (props: UseGroupDataParams) => {
-  const { contentTypeUid, groupField, groupName } = props;
+  const { contentTypeUid, groupField, groupName, updateCounter } = props;
 
   const fetchClient = useFetchClient();
 
   const result = useQuery({
-    queryKey: [PLUGIN_ID, 'groups', contentTypeUid, groupField, groupName],
+    queryKey: [PLUGIN_ID, 'groups', updateCounter, contentTypeUid, groupField, groupName],
     async queryFn() {
       const result = await fetchClient.get(
         `/${PLUGIN_ID}/groups/${contentTypeUid}/${groupField}/${groupName}`
