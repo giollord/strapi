@@ -23,7 +23,7 @@ export const SettingsPage = () => {
   const { toggleNotification } = useNotification();
   const fetchClient = useFetchClient();
   const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
-  const { settings, isLoading: isFetching, refetch } = useSettings();
+  const { settings, isLoading: isFetching } = useSettings({ updateCounter: 0 });
   const [modifiedData, setModifiedData] = useState<Settings | null>(settings || null);
 
   useEffect(() => {
