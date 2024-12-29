@@ -195,7 +195,7 @@ const LeftMenu = () => {
         href={`/admin/plugins/${PLUGIN_ID}`}
         icon={<ArrowLeft />}>
         {formatMessage({
-          id: 'left-menu.back-to-collecction-types.label',
+          id: 'left-menu.back-to-collection-types.label',
           defaultMessage: 'Back to collection types',
         })}
       </SubNavLinkCustom>

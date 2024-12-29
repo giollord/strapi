@@ -157,7 +157,7 @@ export const UserSettings = () => {
           attributeNames={mediaAttributeNames}
           hintContent={formatMessage({
             id: 'arrange.media-select.hint',
-            defaultMessage: 'Option controls what media field will be displayed as items preview in the group. Only affects current user.',
+            defaultMessage: 'Option controls what media field will be displayed as items preview in the group. Only affects the current user.',
           })}
           labelContent={formatMessage({
             id: 'arrange.media-select.label',
@@ -182,7 +182,7 @@ export const UserSettings = () => {
           attributeNames={titleAttributeNames}
           hintContent={formatMessage({
             id: 'arrange.title-select.hint',
-            defaultMessage: 'Option controls what text field will be used to display titles. Only affects current user.',
+            defaultMessage: 'Option controls what text field will be used to display titles. Only affects the current user.',
           })}
           labelContent={formatMessage({
             id: 'arrange.title-select.label',
@@ -207,7 +207,7 @@ export const UserSettings = () => {
           attributeNames={titleAttributeNames}
           hintContent={formatMessage({
             id: 'arrange.subtitle-select.hint',
-            defaultMessage: 'Option controls what text field will be used to display subtitles. Only affects current user.',
+            defaultMessage: 'Option controls what text field will be used to display subtitles. Only affects the current user.',
           })}
           labelContent={formatMessage({
             id: 'arrange.subtitle-select.label',
@@ -232,7 +232,7 @@ export const UserSettings = () => {
             }}
             hintContent={formatMessage({
               id: 'arrange.row-height-2d.hint',
-              defaultMessage: 'Controls visual display of rows in the group. Only affects current user.',
+              defaultMessage: 'Controls visual display of rows in the group. Only affects the current user.',
             })}
             labelContent={formatMessage({
               id: 'arrange.row-height-2d.label',
@@ -262,7 +262,7 @@ export const UserSettings = () => {
             }}
             hintContent={formatMessage({
               id: 'arrange.direction.hint',
-              defaultMessage: 'Controls the direction of the 2d order. Only affects current session.',
+              defaultMessage: 'Controls the direction where items will stick to. Only affects the current session.',
             })}
             labelContent={formatMessage({
               id: 'arrange.direction.label',
@@ -291,7 +291,7 @@ export const UserSettings = () => {
             }}
             hintContent={formatMessage({
               id: 'arrange.row-height-multiline-rem.hint',
-              defaultMessage: 'Controls visual display of rows in the group. Only affects current user.',
+              defaultMessage: 'Controls visual display of rows in the group. Only affects the current user.',
             })}
             labelContent={formatMessage({
               id: 'arrange.row-height-multiline-rem.label',
@@ -316,7 +316,7 @@ export const UserSettings = () => {
             }}
             hintContent={formatMessage({
               id: 'arrange.multiline-unsorted-columns.hint',
-              defaultMessage: 'Controls the number of columns for unsorted items. Only affects current user.',
+              defaultMessage: 'Controls the number of columns for unsorted items. Only affects the current user.',
             })}
             labelContent={formatMessage({
               id: 'arrange.multiline-unsorted-columns.label',
@@ -351,7 +351,7 @@ export const UserSettings = () => {
             }}
             hintContent={formatMessage({
               id: 'arrange.multiline-show-unsorted-on-top.hint',
-              defaultMessage: 'Controls the position of unsorted items. Only affects current user.',
+              defaultMessage: 'Controls the position of unsorted items. Only affects the current user.',
             })}
             labelContent={formatMessage({
               id: 'arrange.multiline-show-unsorted-on-top.label',
