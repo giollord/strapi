@@ -16,6 +16,8 @@ import { useBlocker } from 'react-router-dom';
 import { ItemsDictionary } from '../types'
 import Order1dComponent from '../components/ArrangePage/Order1dComponent';
 import Order2dComponent from '../components/ArrangePage/Order2dComponent';
+import OrderMultilineComponent from '../components/ArrangePage/OrderMultilineComponent';
+import { MultilinePosition } from '../../../shared/contracts';
 
 const StyledUserSettings = styled(UserSettings)`
   align-items: flex-start;
@@ -58,6 +60,7 @@ const ArrangePage = () => {
   
   const [layout1d, setLayout1d] = useState([] as string[]);
   const [layout2d, setLayout2d] = useState([] as GridLayout.Layout[]);
+  const [layoutMultiline, setLayoutMultiline] = useState({} as Record<string, string[]>);
 
   const [itemsDictionary, setItemsDictionary] = useState({} as ItemsDictionary);
   useEffect(() => {
@@ -90,7 +93,7 @@ const ArrangePage = () => {
   async function handleSave(): Promise<void> {
     setIsSaving(true);
 
-    if (currentAttribute?.isOrder) {
+    if (currentAttribute?.order === '1d') {
       const currentValues = layout1d.map((documentId, index) => ({ documentId, index }));
       for (const { documentId, index } of currentValues) {
         await fetchClient.put(`/content-manager/collection-types/${currentCollectionType?.uid}/${documentId}`, {
@@ -98,7 +101,7 @@ const ArrangePage = () => {
         });
       }
     }
-    if (currentAttribute?.isOrder2d) {
+    if (currentAttribute?.order === '2d') {
       for (const item of layout2d) {
         const value = {
           x: item.x,
@@ -109,6 +112,20 @@ const ArrangePage = () => {
         await fetchClient.put(`/content-manager/collection-types/${currentCollectionType?.uid}/${item.i}`, {
           [groupField!]: value
         });
+      }
+    }
+    if (currentAttribute?.order === 'multiline') {
+      for (const [row, columns] of Object.entries(layoutMultiline)) {
+        for (let i = 0; i < columns.length; i++) {
+          const itemId = columns[i];
+          const value: MultilinePosition = {
+            row: parseInt(row),
+            column: i
+          };
+          await fetchClient.put(`/content-manager/collection-types/${currentCollectionType?.uid}/${itemId}`, {
+            [groupField!]: value
+          });
+        }
       }
     }
 
@@ -171,18 +188,24 @@ const ArrangePage = () => {
           <MainBox>
             <Flex direction="column" alignItems="stretch" gap={4}>
               <StyledUserSettings />
-              {currentAttribute?.isOrder &&
+              {currentAttribute?.order === '1d' &&
                 <Order1dComponent
                   itemsDictionary={itemsDictionary}
                   setIsModified={setIsModified}
                   setLayout1d={setLayout1d} />
               }
-              {currentAttribute?.isOrder2d &&
+              {currentAttribute?.order === '2d' &&
                 <Order2dComponent
                   itemsDictionary={itemsDictionary}
                   isModified={isModified}
                   setIsModified={setIsModified}
                   setLayout2d={setLayout2d} />
+              }
+              {currentAttribute?.order === 'multiline' &&
+                <OrderMultilineComponent
+                  itemsDictionary={itemsDictionary}
+                  setIsModified={setIsModified}
+                  setLayoutMultiline={setLayoutMultiline} />
               }
             </Flex>
           </MainBox>

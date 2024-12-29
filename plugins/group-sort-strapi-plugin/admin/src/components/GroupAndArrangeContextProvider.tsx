@@ -41,7 +41,7 @@ export interface GroupAndArrangeContextValue {
 
 export interface GroupAndArrangeContextSetters {
   setLocalSettings: (newConfig: LocalSettings) => void;
-  setLocalConfig: (config: any) => void;
+  setLocalConfig: (config: LocalConfig) => void;
   setChosenDirection: (direction: GridDirection) => void;
   // triggerUpdate is a function that can be called to trigger a re-fetch all of the data from the API
   triggerUpdate: () => void;
