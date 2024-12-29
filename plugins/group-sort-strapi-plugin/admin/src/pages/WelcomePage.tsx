@@ -13,6 +13,10 @@ const MainBox = styled.div`
   margin: ${({ theme }) => (theme as StrapiTheme).spaces[4]};
   padding: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
   background-color: ${({ theme }) => (theme as StrapiTheme).colors.neutral0};
+
+  li {
+    margin-left: ${({ theme }) => (theme as StrapiTheme).spaces[6]};
+  }
 `;
 const WordWrap = styled<TypographyComponent>(Typography)`
   word-break: break-word;
@@ -58,7 +62,7 @@ const WelcomePage = () => {
             <WordWrap>
               <FormattedMessage
                 id="plugin.description"
-                defaultMessage="This plugin allows you to group and arrange content types in the Strapi admin panel. Choose collection and group in panel to the left to get started!"
+                defaultMessage="This plugin allows you to group and arrange content types in the Strapi admin panel. Choose a collection and group in the panel to the left to get started!"
               />
             </WordWrap>
             <WordWrap>
@@ -67,10 +71,20 @@ const WelcomePage = () => {
                 defaultMessage="
                 <p>To use the Group and Arrange plugin, follow these steps:</p>
                 <ol>
-                  <li>Navigate to the Strapi admin panel.</li>
-                  <li>In the left menu, select the collection type you want to group and arrange.</li>
-                  <li>Use the drag-and-drop interface to organize your content types.</li>
-                  <li>Click <b>Save</b> to apply your changes.</li>
+                  <li>
+                    Create column in content type manager of one of following types:
+                    <ul>
+                      <li>Order - simple drag-and-drop ordering of 1-dimensional list</li>
+                      <li>Order 2D - tile-based arrangement of tiles on 2d grid, items can be resized as well (drag bottom right corner)</li>
+                      <li>Multiline order - multiple lines with variable amount of elements in lines</li>
+                    </ul>
+                  </li>
+                  <li>Set column to group by in 'Advanced settings' tab. Can group by multiple type of columns - numbers, texts, media, relations etc.</li>
+                  <li>Set required additional settings, such as columns count</li>
+                  <li>Open oplugin page and in left menu select the collection type and group you want to arrange items in</li>
+                  <li>Use the drag-and-drop interface to arrange your content types</li>
+                  <li>Change settings on page to change current view (values only affect current user and saved in browser's localStorage)</li>
+                  <li>Don't forget to click <b>Save</b> to apply your changes.</li>
                 </ol>
                 <p>For more detailed instructions, refer to the plugin documentation.</p>
                 "
