@@ -48,7 +48,7 @@ const HeightAdjustableCardHeader = styled(CardHeader)<{ $heightRem: number | nul
   div {
     width: 100%;
     ${({ $heightRem }) => $heightRem &&
-      `height: ${$heightRem} rem;`
+      `height: ${$heightRem}rem;`
     }
   }
 `;

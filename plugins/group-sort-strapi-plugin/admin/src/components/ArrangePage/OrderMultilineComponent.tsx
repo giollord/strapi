@@ -264,20 +264,8 @@ const OrderMultilineComponent = (props: Order1dComponentProps) => {
         const order: MultilinePosition = item[groupField!] === undefined || item[groupField!] === null ? { row: 0, column: 0 } : item[groupField!];
         acc.push({ order: order || null, documentId: item.documentId });
         return acc;
-      }, [] as { order: MultilinePosition, documentId: string }[]) || [];
-
-    // // remove gaps in line numbers, excluding 0:
-    // const lines = sortables.map(x => x.order.line).filter(x => x > 0);
-    // const lineNumbers = Array.from(new Set(lines)).sort();
-    // const lineNumbersMap = lineNumbers.reduce((acc, x, i) => {
-    //   acc[x] = i + 1;
-    //   return acc;
-    // }, {} as Record<number, number>);
-    // sortables.forEach(x => {
-    //   if (x.order.line > 0) {
-    //     x.order.line = lineNumbersMap[x.order.line];
-    //   }
-    // });
+      }, [] as { order: MultilinePosition, documentId: string }[])
+      .sort((a,b) => a.order.column - b.order.column) || [];
 
     let maxRow = 0;
     const itemsPerContainer = sortables
