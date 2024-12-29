@@ -15,6 +15,12 @@ const register = ({ strapi }: { strapi: Core.Strapi }) => {
     type: 'json',
     plugin: PLUGIN_ID
   });
+
+  strapi.customFields.register({
+    name: 'orderMultiline',
+    type: 'json',
+    plugin: PLUGIN_ID
+  });
 };
 
 export default register;

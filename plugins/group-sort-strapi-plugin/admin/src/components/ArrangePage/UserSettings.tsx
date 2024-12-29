@@ -1,4 +1,4 @@
-import { Field, Grid, NumberInput, SingleSelect, SingleSelectOption } from '@strapi/design-system';
+import { Field, Grid, NumberInput, SingleSelect, SingleSelectOption, Toggle } from '@strapi/design-system';
 import React, { ReactNode, useContext } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { GroupAndArrangeContext } from '../GroupAndArrangeContextProvider';
@@ -8,9 +8,9 @@ const GridItem = ({ children }: { children: React.ReactNode }) => (
   <Grid.Item xs={12} s={6} m={4}>{children}</Grid.Item>
 );
 
-interface SelectFieldProps {
+interface SelectFieldFieldProps {
   chosenField: string | null | undefined;
-  setChosenField: (newField: string) => void;
+  setChosenField: (newValue: string) => void;
   attributeNames: string[];
   hintContent: string | ReactNode;
   labelContent: string | ReactNode;
@@ -18,7 +18,7 @@ interface SelectFieldProps {
   emptyItemContent: string | ReactNode | null;
 }
 
-const SelectField = (props: SelectFieldProps) => {
+const SelectFieldField = (props: SelectFieldFieldProps) => {
   const {
     chosenField,
     setChosenField,
@@ -53,6 +53,84 @@ const SelectField = (props: SelectFieldProps) => {
     </Field.Root>);
 }
 
+interface SelectFieldProps {
+  value: string | null | undefined;
+  setValue: (newValue: string) => void;
+  options: Record<string, string>;
+  hintContent: string | ReactNode;
+  labelContent: string | ReactNode;
+  placeholderContent: string | ReactNode;
+  emptyItemContent?: string | ReactNode | null;
+}
+
+const SelectField = (props: SelectFieldProps) => {
+  const {
+    value,
+    setValue,
+    options,
+    hintContent,
+    labelContent,
+    placeholderContent,
+    emptyItemContent
+  } = props
+
+  return (
+    <Field.Root
+      hint={hintContent}
+      width="100%">
+      <Field.Label>
+        {labelContent}
+      </Field.Label>
+      <SingleSelect
+        placeholder={placeholderContent}
+        value={value || ''}
+        onChange={s => setValue(s.toString())}
+      >
+        {options && Object.keys(options).concat(emptyItemContent ? [''] : []).map((option) => (
+          <SingleSelectOption
+            key={option}
+            value={option}>
+            {options[option] || emptyItemContent}
+          </SingleSelectOption>
+        ))}
+      </SingleSelect>
+      <Field.Hint />
+    </Field.Root>);
+}
+
+interface NumberFieldProps {
+  value: number | undefined;
+  setValue: (newValue: number | undefined) => void;
+  hintContent: string | ReactNode;
+  labelContent: string | ReactNode;
+  placeholderContent: string;
+}
+
+const NumberField = (props: NumberFieldProps) => {
+  const {
+    value,
+    setValue,
+    hintContent,
+    labelContent,
+    placeholderContent
+  } = props;
+
+  return (
+    <Field.Root
+      hint={hintContent}
+      width="100%">
+      <Field.Label>
+        {labelContent}
+      </Field.Label>
+      <NumberInput
+        value={value}
+        onValueChange={setValue}
+        placeholder={placeholderContent}
+      />
+      <Field.Hint />
+    </Field.Root>);
+}
+
 /**
  * UserSettings component, used in ArrangePage to display user settings for the plugin: chosen media and title fields, row height for 2d order
  */
@@ -68,7 +146,7 @@ export const UserSettings = () => {
   return (
     <Grid.Root gap={4}>
       <GridItem>
-        <SelectField
+        <SelectFieldField
           chosenField={chosenMediaField}
           setChosenField={(value) => {
             setLocalConfig({
@@ -93,7 +171,7 @@ export const UserSettings = () => {
         />
       </GridItem>
       <GridItem>
-        <SelectField
+        <SelectFieldField
           chosenField={chosenTitleField}
           setChosenField={(value) => {
             setLocalConfig({
@@ -118,7 +196,7 @@ export const UserSettings = () => {
         />
       </GridItem>
       <GridItem>
-        <SelectField
+        <SelectFieldField
           chosenField={localConfig?.chosenSubtitleField}
           setChosenField={(value) => {
             setLocalConfig({
@@ -142,86 +220,148 @@ export const UserSettings = () => {
           emptyItemContent={emptyItemContent}
         />
       </GridItem>
-      {currentAttribute?.isOrder2d && 
+      {currentAttribute?.order === '2d' &&
         <GridItem>
-          <Field.Root
-            hint={formatMessage({
-              id: 'arrange.row-height.hint',
+          <NumberField
+            value={localConfig?.rowHeight2d || 32}
+            setValue={value => {
+              setLocalConfig({
+                ...localConfig!,
+                rowHeight2d: value!
+              });
+            }}
+            hintContent={formatMessage({
+              id: 'arrange.row-height-2d.hint',
               defaultMessage: 'Controls visual display of rows in the group. Only affects current user.',
             })}
-            width="100%">
-            <Field.Label>
-              {formatMessage({
-                id: 'arrange.row-height.label',
-                defaultMessage: 'Row height, px',
-              })}
-            </Field.Label>
-            <NumberInput
-              value={localConfig?.rowHeight || 30}
-              onValueChange={(value: number | undefined): void => {
-                setLocalConfig({
-                  ...localConfig!,
-                  rowHeight: value!
-                });
-              }}
-              placeholder={formatMessage({
-                id: 'arrange.row-height.placeholder',
-                defaultMessage: 'Choose row height, px'
-              })}
-            />
-            <Field.Hint />
-          </Field.Root>
+            labelContent={formatMessage({
+              id: 'arrange.row-height-2d.label',
+              defaultMessage: 'Row height, px',
+            })}
+            placeholderContent={formatMessage({
+              id: 'arrange.row-height-2d.placeholder',
+              defaultMessage: 'Choose row height, px'
+            })}
+          />
         </GridItem>
       }
-      {currentAttribute?.isOrder2d && 
+      {currentAttribute?.order === '2d' &&
         <GridItem>
-          <Field.Root
-            hint={formatMessage({
+          <SelectField
+            value={chosenDirection}
+            setValue={x => setChosenDirection((x || null) as GridDirection)}
+            options={{
+              horizontal: formatMessage({
+                id: 'arrange.direction.horizontal',
+                defaultMessage: 'Horizontal'
+              }),
+              vertical: formatMessage({
+                id: 'arrange.direction.vertical',
+                defaultMessage: 'Vertical'
+              })
+            }}
+            hintContent={formatMessage({
               id: 'arrange.direction.hint',
               defaultMessage: 'Controls the direction of the 2d order. Only affects current session.',
             })}
-            width="100%">
-            <Field.Label>
-              {formatMessage({
-                id: 'arrange.direction.label',
-                defaultMessage: 'Direction'
-              })}
-            </Field.Label>
-            <SingleSelect
-              placeholder={formatMessage({
-                id: 'arrange.direction.placeholder',
-                defaultMessage: 'Choose direction'
-              })}
-              value={chosenDirection}
-              onChange={x => setChosenDirection((x || null) as GridDirection)}
-            >
-              <SingleSelectOption
-                key='horizontal'
-                value='horizontal'>
-                {formatMessage({
-                  id: 'arrange.direction.horizontal',
-                  defaultMessage: 'Horizontal'
-                })}
-              </SingleSelectOption>
-              <SingleSelectOption
-                key='vertical'
-                value='vertical'>
-                {formatMessage({
-                  id: 'arrange.direction.vertical',
-                  defaultMessage: 'Vertical'
-                })}
-              </SingleSelectOption>
-              <SingleSelectOption
-                key=''
-                value=''>
-                  {formatMessage({
-                    id: 'arrange.direction.none',
-                    defaultMessage: '<None>'
-                  })}
-              </SingleSelectOption>
-            </SingleSelect>
-            <Field.Hint />
-          </Field.Root>
+            labelContent={formatMessage({
+              id: 'arrange.direction.label',
+              defaultMessage: 'Direction'
+            })}
+            placeholderContent={formatMessage({
+              id: 'arrange.direction.placeholder',
+              defaultMessage: 'Choose direction'
+            })}
+            emptyItemContent={formatMessage({
+              id: 'arrange.direction.none',
+              defaultMessage: '<None>'
+            })}
+          />
+        </GridItem>
+      }
+      {currentAttribute?.order === 'multiline' &&
+        <GridItem>
+          <NumberField
+            value={localConfig?.rowHeightMultilineRem || 16}
+            setValue={value => {
+              setLocalConfig({
+                ...localConfig!,
+                rowHeightMultilineRem: value!
+              });
+            }}
+            hintContent={formatMessage({
+              id: 'arrange.row-height-multiline-rem.hint',
+              defaultMessage: 'Controls visual display of rows in the group. Only affects current user.',
+            })}
+            labelContent={formatMessage({
+              id: 'arrange.row-height-multiline-rem.label',
+              defaultMessage: 'Row height, rem',
+            })}
+            placeholderContent={formatMessage({
+              id: 'arrange.row-height-multiline-rem.placeholder',
+              defaultMessage: 'Choose row height, rem'
+            })}
+          />
+        </GridItem>
+      }
+      {currentAttribute?.order === 'multiline' &&
+        <GridItem>
+          <NumberField
+            value={localConfig?.multilineUnsortedColumns || 12}
+            setValue={value => {
+              setLocalConfig({
+                ...localConfig!,
+                multilineUnsortedColumns: Math.max(1, Math.min(50, value!))
+              });
+            }}
+            hintContent={formatMessage({
+              id: 'arrange.multiline-unsorted-columns.hint',
+              defaultMessage: 'Controls the number of columns for unsorted items. Only affects current user.',
+            })}
+            labelContent={formatMessage({
+              id: 'arrange.multiline-unsorted-columns.label',
+              defaultMessage: 'Unsorted columns count',
+            })}
+            placeholderContent={formatMessage({
+              id: 'arrange.multiline-unsorted-columns.placeholder',
+              defaultMessage: 'Choose unsorted columns count'
+            })}
+          />
+        </GridItem>
+      }
+      {currentAttribute?.order === 'multiline' &&
+        <GridItem>
+          <SelectField
+            value={localConfig?.multilineShowUnsortedOnTop ? 'top' : 'bottom'}
+            setValue={x => {
+              setLocalConfig({
+                ...localConfig!,
+                multilineShowUnsortedOnTop: x === 'top'
+              });
+            }}
+            options={{
+              top: formatMessage({
+                id: 'arrange.multiline-show-unsorted-on-top.top',
+                defaultMessage: 'Top'
+              }),
+              bottom: formatMessage({
+                id: 'arrange.multiline-show-unsorted-on-top.bottom',
+                defaultMessage: 'Bottom'
+              })
+            }}
+            hintContent={formatMessage({
+              id: 'arrange.multiline-show-unsorted-on-top.hint',
+              defaultMessage: 'Controls the position of unsorted items. Only affects current user.',
+            })}
+            labelContent={formatMessage({
+              id: 'arrange.multiline-show-unsorted-on-top.label',
+              defaultMessage: 'Show unsorted on'
+            })}
+            placeholderContent={formatMessage({
+              id: 'arrange.multiline-show-unsorted-on-top.placeholder',
+              defaultMessage: 'Choose position'
+            })}
+          />
         </GridItem>
       }
     </Grid.Root>

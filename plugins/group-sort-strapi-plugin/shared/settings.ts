@@ -21,7 +21,10 @@ export interface LocalConfig {
   chosenMediaField: string;
   chosenTitleField: string;
   chosenSubtitleField: string;
-  rowHeight: number;
+  rowHeight2d: number;
+  rowHeightMultilineRem: number;
+  multilineUnsortedColumns: number;
+  multilineShowUnsortedOnTop: boolean;
 }
 
 /**

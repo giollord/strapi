@@ -12,6 +12,5 @@ export interface ItemsDictionary
 
 
 export type OrderAttribute = Attribute.AnyAttribute & {
-  isOrder: boolean;
-  isOrder2d: boolean;
+  order: '1d' | '2d' | 'multiline';
 }

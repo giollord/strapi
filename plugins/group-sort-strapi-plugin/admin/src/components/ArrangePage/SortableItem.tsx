@@ -3,13 +3,15 @@ import { CSS } from '@dnd-kit/utilities';
 import { Card, CardAsset, CardBody, CardContent, CardHeader, CardSubtitle, CardTitle } from '@strapi/design-system';
 import styled from 'styled-components';
 import { EmptyPictures } from '@strapi/icons/symbols';
+import { UniqueIdentifier } from '@dnd-kit/core';
 
 interface SortableItemProps {
-  id: string;
+  id: UniqueIdentifier;
   title: string;
   subtitle: string;
   thumbnailUri: string;
   resizable: boolean;
+  heightRem?: number;
 }
 
 const StyledEmptyPictures = styled(EmptyPictures)`
@@ -36,6 +38,18 @@ const ResizableCardHeader = styled(CardHeader)`
   div {
     width: 100%;
     height: 100%;
+  }
+`;
+
+const HeightAdjustableCardHeader = styled(CardHeader)<{ $heightRem: number | null }>`
+  overflow: hidden;
+  flex: 1;
+  
+  div {
+    width: 100%;
+    ${({ $heightRem }) => $heightRem &&
+      `height: ${$heightRem} rem;`
+    }
   }
 `;
 
@@ -79,14 +93,14 @@ export const SortableItem = (props: SortableItemProps) => {
   }
   return (
     <Card ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <CardHeader>
+      <HeightAdjustableCardHeader $heightRem={props.heightRem || null}>
         {props.thumbnailUri &&
           <CardAsset src={props.thumbnailUri} />}
         {!props.thumbnailUri &&
           <CardAsset>
             <StyledEmptyPictures style={{ objectFit: "contain", width: '100%' }} />
           </CardAsset>}
-      </CardHeader>
+      </HeightAdjustableCardHeader>
       {(props.title || props.subtitle) && (
         <CardBody>
           <CardContent>

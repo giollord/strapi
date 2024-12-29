@@ -25,7 +25,7 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
   const [chosenSubtitleField, setChosenSubtitleField] = useState<string | undefined>(undefined);
   const [mediaAttributeNames, setMediaAttributeNames] = useState<string[]>([]);
   const [titleAttributeNames, setTitleAttributeNames] = useState<string[]>([]);
-  const [currentAttribute, setCurrentAttribute] = useState<(Attribute.AnyAttribute & { isOrder: boolean, isOrder2d: boolean }) | null>(null);
+  const [currentAttribute, setCurrentAttribute] = useState<(Attribute.AnyAttribute & { order: '1d' | '2d' | 'multiline' }) | null>(null);
   const [currentCollectionType, setCurrentCollectionType] = useState<Struct.ContentTypeSchema | undefined>(undefined);
   const [currentFieldSettings, setCurrentFieldSettings] = useState<OrderFieldConfiguration | undefined>(undefined);
 
@@ -59,10 +59,10 @@ export const useAttributeData = (props: UseAttributeNamesParams) => {
         }
         const isOrder = (attribute as any)?.customField === `plugin::${PLUGIN_ID}.order`;
         const isOrder2d = (attribute as any)?.customField === `plugin::${PLUGIN_ID}.order2d`;
+        const isMultiline = (attribute as any)?.customField === `plugin::${PLUGIN_ID}.orderMultiline`;
         return {
           ...attribute,
-          isOrder,
-          isOrder2d
+          order: (isOrder ? '1d' : isOrder2d ? '2d' : isMultiline ? 'multiline' : undefined) as '1d' | '2d' | 'multiline'
         };
       }).filter((x) => x)[0];
 

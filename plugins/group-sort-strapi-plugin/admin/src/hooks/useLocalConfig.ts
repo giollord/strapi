@@ -25,7 +25,10 @@ const useLocalConfig = (props: UseLocalConfigProps): [LocalConfig, (newConfig: L
       chosenMediaField: '',
       chosenTitleField: '',
       chosenSubtitleField: '',
-      rowHeight: 30,
+      rowHeight2d: 32,
+      rowHeightMultilineRem: 16,
+      multilineUnsortedColumns: 12,
+      multilineShowUnsortedOnTop: true,
     };
   }
 

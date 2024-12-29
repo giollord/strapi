@@ -51,18 +51,16 @@ const Order1dComponent = (props: Order1dComponentProps) => {
   }
 
   useEffect(() => {
-    if (currentAttribute?.isOrder) {
-      // Prepare sortables for 1-dimensional list.
-      // Items that does not have order yet will be placed at the end of the list.
-      const sortables: {order: number, documentId: string}[] = Object.values(itemsDictionary)
-        .reduce((acc: {order: number, documentId: string}[], item) => {
-          const order = item[groupField!] === undefined || item[groupField!] === null ? acc.length - 1 : item[groupField!];
-          acc.push({ order, documentId: item.documentId });
-          return acc;
-        }, []) || [];
-      sortables.sort((a, b) => a.order - b.order);
-      setLayout1d(sortables.map(x => x.documentId));
-    }
+    // Prepare sortables for 1-dimensional list.
+    // Items that does not have order yet will be placed at the end of the list.
+    const sortables: {order: number, documentId: string}[] = Object.values(itemsDictionary)
+      .reduce((acc: {order: number, documentId: string}[], item) => {
+        const order = item[groupField!] === undefined || item[groupField!] === null ? acc.length - 1 : item[groupField!];
+        acc.push({ order, documentId: item.documentId });
+        return acc;
+      }, []) || [];
+    sortables.sort((a, b) => a.order - b.order);
+    setLayout1d(sortables.map(x => x.documentId));
   }, [currentAttribute, itemsDictionary]);
 
   return (

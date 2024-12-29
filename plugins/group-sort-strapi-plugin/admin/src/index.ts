@@ -86,6 +86,27 @@ export default {
         validator: fieldValidator
       }
     });
+    
+    app.customFields.register({
+      name: 'orderMultiline',
+      type: 'json',
+      pluginId: PLUGIN_ID,
+      intlLabel: {
+        id: getTrad('order-multiline.label'),
+        defaultMessage: 'Multiline order',
+      },
+      intlDescription: {
+        id: getTrad('order-multiline.description'),
+        defaultMessage: 'Line number and position on line within the group',
+      },
+      icon: OrderIcon,
+      components: {
+        Input: () => import('./components/contentManager/OrderMultilineInput')
+      },
+      options: {
+        validator: fieldValidator
+      }
+    });
 
     app.registerPlugin({
       id: PLUGIN_ID,
@@ -125,6 +146,7 @@ export default {
             }
 
             const isOrder2d = ORDERABLE_2D_FIELDS.includes(type);
+            const isOrderMultiline = isOrder2d;
 
             const availableOptions = contentTypeSchema.schema.attributes
               .filter((attr: any) => GROUPABLE_FIELDS.includes(attr.type))

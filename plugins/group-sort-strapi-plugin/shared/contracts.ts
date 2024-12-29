@@ -23,3 +23,8 @@ export interface GroupResultItem {
   item: any,
   groups: GroupResultMeta[]
 }
+
+export interface MultilinePosition {
+  row: number,
+  column: number
+}
