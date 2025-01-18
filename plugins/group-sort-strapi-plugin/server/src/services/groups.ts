@@ -4,9 +4,22 @@ import { GroupResult, GroupResultItem, GroupResultMeta } from '../../../shared/c
 import { GridDirection } from "../../../shared/types";
 import { ContentTypeNotFoundError, GroupNameFieldNotFound } from '../../../shared/errors';
 import { GROUPABLE_FIELDS_REQUIRING_POPULATE, PLUGIN_ID, UNDEFINED_GROUP_NAME } from '../../../shared/constants';
+import { plural } from 'pluralize';
 
 const THROW_IF_GROUP_NAME_FIELD_NOT_FOUND = false;
 
+
+function extractValueOrPlural(obj: any, field: string) {
+  let value = get(obj, field);
+  if(value)
+    return value;
+  
+  value = get(obj, plural(field));
+  if(value)
+    return value;
+
+  return null;
+}
 
 function extractValue (arg: any): any {
   if (Array.isArray(arg)) {
@@ -94,8 +107,8 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     };
 
     for (const entity of entities) {
-      const entityGroupName = extractValue(get(entity, groupConfig.groupNameField)) as string;
-      if (groupName !== entityGroupName) continue;
+      const entityGroupName = extractValue(extractValueOrPlural(entity, groupConfig.groupNameField)) as string;
+      if (groupName !== entityGroupName?.toString()) continue;
 
       group.items.push(entity);
     }
@@ -125,7 +138,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
       result.push({
         item: entity,
         groups: groupConfigs.map((groupConfig) => ({
-          groupName: extractValue(get(entity, groupConfig.groupNameField)) || UNDEFINED_GROUP_NAME,
+          groupName: extractValue(extractValueOrPlural(entity, groupConfig.groupNameField))?.toString() || UNDEFINED_GROUP_NAME,
           orderField: groupConfig.orderField,
           order2dDirection: groupConfig.order2dDirection,
         })),
